@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 
-from datetime import date
+from django.utils import timezone
 
 from helper.models import Address
 
@@ -99,8 +99,10 @@ class Referee(models.Model):
     )
     dob = models.DateField(
         verbose_name=_("Date of Birth"),
+        blank=True,
+        null=True,
     )
-    iban = models.CharField(max_length=34)
+    iban = models.CharField(max_length=34, verbose_name=_("IBAN"), blank=True)
 
     class Meta:
         verbose_name = _("Referee Profile")
@@ -112,7 +114,7 @@ class Referee(models.Model):
 
     @property
     def name(self) -> str:
-        return " ".join([self.user.first_name, self.user.last_name])
+        return " ".join([self.user.first_name, self.user.last_name]).strip()
 
     def licenses(self, child_of: RefereeLicense) -> list[RefereeLicense]:
         if not isinstance(child_of, RefereeLicense):
@@ -164,7 +166,7 @@ class Examination(models.Model):
         blank=True,
         verbose_name=_("Chief Examiner"),
     )
-    date = models.DateField(verbose_name=_("Examination Date"), default=date.today())
+    date = models.DateField(verbose_name=_("Examination Date"))
     address = models.ForeignKey(
         Address,
         on_delete=models.PROTECT,
