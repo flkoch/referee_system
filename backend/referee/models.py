@@ -72,6 +72,12 @@ class RefereeLicense(models.Model):
     def __gt__(self, other: any) -> bool:
         return self.is_parent_of(other)
 
+    def __le__(self, other: any) -> bool:
+        return self < other or self == other
+
+    def __ge__(self, other: any) -> bool:
+        return self > other or self == other
+
     def __str__(self):
         return self.name
 
@@ -109,17 +115,29 @@ class Referee(models.Model):
         order_with_respect_to = "user"
 
     @property
-    def licenses(self) -> models.QuerySet:
+    def passed_exams(self) -> models.QuerySet:
         return self.exams.filter(passed=True)
 
     @property
-    def name(self) -> str:
-        return " ".join([self.user.first_name, self.user.last_name]).strip()
+    def licenses(self) -> models.QuerySet:
+        return self.passed_exams.values_list("license__name", flat=True)
 
-    def licenses(self, child_of: RefereeLicense) -> list[RefereeLicense]:
+    @property
+    def name(self) -> str:
+        if self.user.first_name or self.user.last_name:
+            return " ".join([self.user.first_name, self.user.last_name]).strip()
+        return self.user.username
+
+    def licenses_below(self, child_of: RefereeLicense) -> list[RefereeLicense]:
         if not isinstance(child_of, RefereeLicense):
             raise TypeError(f"{child_of} must be of type {type(self)}.")
         return [l for l in self.licenses if l < child_of]
+
+    def is_qualified(self, qualification: RefereeLicense) -> bool:
+        for l in self.licenses:
+            if RefereeLicense.objects.get(name=l) >= qualification:
+                return True
+        return False
 
     def __str__(self) -> str:
         if not self.user.first_name and not self.user.last_name:
@@ -186,6 +204,12 @@ class Examination(models.Model):
     passed = models.BooleanField(verbose_name=_("Passed"), default=True)
     note_internal = models.TextField(verbose_name=_("Note (internal)"), blank=True)
     note_external = models.TextField(_("Note (external)"), blank=True)
+
+    @classmethod
+    def create(self, candidate, **kwargs):
+        if isinstance(candidate, User):
+            candidate = candidate.referee
+        return Examination.objects.create(candidate=candidate, **kwargs)
 
     class Meta:
         verbose_name = _("Examination")
