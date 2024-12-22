@@ -23,7 +23,7 @@ class RefereeTestCase(TestCase):
             username="second-user", email="2@test.com", password="user-password"
         )
 
-    def check_profile(self):
+    def test_profile(self):
         self.assertIsInstance(self.admin.referee, Referee)
 
     def test_referee_name(self):
