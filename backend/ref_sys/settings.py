@@ -115,10 +115,24 @@ LANGUAGE_CODE = "en-gb"
 
 TIME_ZONE = "CET"
 
-USE_I18N = True
+USE_I18N = False
+
+USE_L10N = False
 
 USE_TZ = True
 
+DATE_FORMAT = "%d/%b/%Y"
+
+DATE_INPUT_FORMATS = [
+    "%Y-%m-%d",
+    "%d/%m/%Y",
+    "%d/%m/%y",
+    "%d-%m-%Y",
+    "%d-%m-%y",
+    "%d %b &Y",
+    "%d %B %Y",
+    "%B %d %Y",
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
