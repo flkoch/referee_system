@@ -114,14 +114,12 @@ class Examination(models.Model):
         Referee,
         on_delete=models.CASCADE,
         related_name="exams",
-        related_query_name="exam",
         verbose_name=_("Candidate"),
     )
     license = models.ForeignKey(
         RefereeLicense,
         on_delete=models.PROTECT,
         related_name="exams",
-        related_query_name="exam",
         verbose_name=_("License"),
     )
     chief_examiner = models.ForeignKey(

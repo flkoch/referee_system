@@ -42,8 +42,7 @@ class Event(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name=_("event_creator"),
-        related_query_name="event_creator",
+        related_name="event_created",
     )
     info = models.TextField(verbose_name=_("Information"), blank=True)
     slug = models.SlugField(unique_for_year="start")
@@ -79,8 +78,7 @@ class Event(models.Model):
 class Competition(models.Model):
     event = models.ForeignKey(
         Event,
-        related_name=_("Competition"),
-        related_query_name="competition",
+        related_name="competitions",
         on_delete=models.CASCADE,
     )
     invitor = models.ForeignKey(Referee, on_delete=models.PROTECT)
@@ -224,8 +222,7 @@ class Application(models.Model):
     competition = models.ForeignKey(
         Competition,
         on_delete=models.PROTECT,
-        related_name=_("Applications"),
-        related_query_name="applications",
+        related_name="applications",
     )
     status = models.IntegerField(choices=Status, default=Status.APPLIED)
     role = models.ForeignKey(RefereeRole, on_delete=models.PROTECT)
