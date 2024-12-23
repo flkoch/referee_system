@@ -149,7 +149,7 @@ class Examination(models.Model):
     )
     passed = models.BooleanField(verbose_name=_("Passed"), default=True)
     note_internal = models.TextField(verbose_name=_("Note (internal)"), blank=True)
-    note_external = models.TextField(_("Note (external)"), blank=True)
+    note_external = models.TextField(verbose_name=_("Note (external)"), blank=True)
 
     @classmethod
     def create(cls, candidate, **kwargs):
