@@ -1,14 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext as _
 
-from django.utils import timezone
 
-from helper.models import Address
+from helper.models import Address, Category
 
 
-class RefereeLicense(models.Model):
-    name = models.CharField(max_length=50, unique=True, verbose_name=_("Name"))
+class RefereeLicense(Category):
     parent = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
@@ -23,63 +22,6 @@ class RefereeLicense(models.Model):
     class Meta:
         verbose_name = _("Referee license")
         verbose_name_plural = _("Referee licenses")
-
-    def is_parent_of(self, other: any) -> bool:
-        """
-        is_parent_of
-        checks wether the other object is a hirarchically below this instance
-
-        Args:
-            other (any): object to compare against
-
-        Returns:
-            bool: True if the other object is hirarchically a decendent of this instance.
-        """
-        if not isinstance(other, RefereeLicense):
-            raise TypeError(
-                f"{other} is of type {type(other)} which cannot be compared with {type(self)}."
-            )
-        if other.parent is None:
-            return False
-        if other.parent == self:
-            return True
-        return self.is_parent_of(other.parent)
-
-    def is_child_of(self, other: any) -> bool:
-        """
-        is_child_of
-        checks wether the other object is hirarchically above this instance
-
-        Args:
-            other (any): other object to compare against
-
-        Returns:
-            bool: True if the other object is hirarchically an ancestor of this instance
-        """
-        if not isinstance(other, RefereeLicense):
-            raise TypeError(
-                f"{other} is of type {type(other)} which cannot be compared with {type(self)}."
-            )
-        if self.parent is None:
-            return False
-        if self.parent.id == other.id:
-            return True
-        return self.parent.is_child_of(other)
-
-    def __lt__(self, other: any) -> bool:
-        return self.is_child_of(other)
-
-    def __gt__(self, other: any) -> bool:
-        return self.is_parent_of(other)
-
-    def __le__(self, other: any) -> bool:
-        return self < other or self == other
-
-    def __ge__(self, other: any) -> bool:
-        return self > other or self == other
-
-    def __str__(self):
-        return self.name
 
 
 class Referee(models.Model):
@@ -109,6 +51,12 @@ class Referee(models.Model):
         null=True,
     )
     iban = models.CharField(max_length=34, verbose_name=_("IBAN"), blank=True)
+    phone = models.CharField(
+        max_length=25, verbose_name=_("Phone number"), blank=True, null=True
+    )
+    mobile = models.CharField(
+        max_length=25, verbose_name=_("Mobile phone number"), blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Referee Profile")
@@ -206,7 +154,7 @@ class Examination(models.Model):
     note_external = models.TextField(_("Note (external)"), blank=True)
 
     @classmethod
-    def create(self, candidate, **kwargs):
+    def create(cls, candidate, **kwargs):
         if isinstance(candidate, User):
             candidate = candidate.referee
         return Examination.objects.create(candidate=candidate, **kwargs)
@@ -218,3 +166,21 @@ class Examination(models.Model):
 
     def __str__(self) -> str:
         return f"{self.license}: {self.candidate.name} ({_('passed') if self.passed else _('failed')})"
+
+
+class RefereeRole(models.Model):
+    name = models.CharField(unique=True, max_length=50)
+    order = models.IntegerField(
+        validators=[MinValueValidator(-100), MaxValueValidator(100)]
+    )
+
+    class Meta:
+        ordering = ["order", "name"]
+        verbose_name = _("Role")
+        verbose_name_plural = _("Roles")
+
+    def __str__(self) -> str:
+        """
+        Return the name as the string representation.
+        """
+        return self.name
