@@ -46,10 +46,10 @@ function UserForm({ route, method }: { route: any; method: any }) {
                     </Form.Group>
                 </Row>
                 <Form.Group>
-                    {isLoading && <LoadingIndicator />}
-                    <Button className="form-button" type="submit">
-                        {name}
-                    </Button>
+                    {isLoading ? <LoadingIndicator /> :
+                        (<Button className="form-button" type="submit">
+                            {name}
+                        </Button>)}
                 </Form.Group>
             </Form>
         </div>

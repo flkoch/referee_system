@@ -1,9 +1,14 @@
-import { Card, Col, Container, Row } from "react-bootstrap"
+import { Button, Card, Col, Container, Row } from "react-bootstrap"
 import { type EventType } from "../lib/types"
 import { formattedDate } from "../lib/functions"
+import { useNavigate } from "react-router-dom"
 
 
 function EventCard({ event }: { event: EventType }) {
+    const navigate = useNavigate()
+    function openDetail() {
+        navigate(`/event/${new Date(event.start).getUTCFullYear()}/${event.slug}`)
+    }
     return (
         <Col>
             <Card className="">
@@ -17,7 +22,8 @@ function EventCard({ event }: { event: EventType }) {
                 </Card.Header>
                 <Card.Body>
                     <Card.Title>{event.name}</Card.Title>
-                    <Card.Body>{event.info}</Card.Body>
+                    <Card.Text>{event.info}</Card.Text>
+                    <Button variant="primary" onClick={openDetail}>Details</Button>
                 </Card.Body>
             </Card>
         </Col>
