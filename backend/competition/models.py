@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core import mail
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -74,6 +75,11 @@ class Event(models.Model):
             return f"{self.start:%d %b %Y}"
         return f"{self.start:%d %b %Y} - {self.end:%d %b %Y}"
 
+    def get_absolute_url(self):
+        return reverse(
+            "event-detail", kwargs={"year": self.start.year, "slug": self.slug}
+        )
+
 
 class Competition(models.Model):
     event = models.ForeignKey(
@@ -114,7 +120,7 @@ class Competition(models.Model):
         blank=True,
         null=True,
     )
-    observer = models.IntegerField(
+    observers = models.IntegerField(
         verbose_name=_("Number of Observers"),
         validators=[MinValueValidator(1), MaxValueValidator(25)],
         blank=True,
@@ -172,7 +178,9 @@ class Accommodation(models.Model):
         SINGLE = 10, _("Single room")
         DORM = 11, _("Dorm")
 
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, related_name="accommodations"
+    )
     name = models.CharField(max_length=240, verbose_name=_("Name of Accommodation"))
     start = models.DateTimeField(
         blank=True, null=True, verbose_name=_("Earliest Check-in")

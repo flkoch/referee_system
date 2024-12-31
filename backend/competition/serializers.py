@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from helper.serializers import LocationSerializer
 from competition.models import (
     Accommodation,
     Application,
@@ -54,7 +55,7 @@ class CompetitionSerializer(serializers.ModelSerializer):
             "observers",
             "application",
             "application_open",
-            "aplication_close",
+            "application_close",
             "created",
             "modified",
         ]
@@ -68,12 +69,15 @@ class CompetitionCategorySerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
+    location = LocationSerializer(many=False, read_only=True)
+    competitions = CompetitionSerializer(many=True, read_only=True)
     class Meta:
         model = Event
         fields = [
             "id",
             "name",
             "location",
+            "competitions",
             "start",
             "end",
             "created",
@@ -81,6 +85,7 @@ class EventSerializer(serializers.ModelSerializer):
             "creator",
             "info",
             "slug",
+            "accommodations",
         ]
         read_only_fields = ["created", "modified", "creator"]
 

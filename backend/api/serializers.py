@@ -2,6 +2,9 @@ from django.contrib.auth.models import User
 
 from rest_framework import serializers
 
+from referee.serializers import RefereeSerializer
+from referee.models import Referee
+
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,7 +17,27 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    referee = RefereeSerializer(many=False, read_only=False)
+
     class Meta:
         model = User
-        fields = ["id", "first_name", "last_name", "username", "password"]
+        fields = ["id", "first_name", "last_name", "username", "password", "referee"]
         extra_kwargs = {"password": {"write_only": True}}
+
+    def create(self, validated_data):
+        referee_data = validated_data.pop("referee")
+        user = User.objects.create_user(**validated_data)
+        referee = Referee.objects.create(user=user, **referee_data)
+        return user
+
+    def update(self, validated_data):
+        user_id = validated_data.pop("id")
+        referee_data = validated_data.pop("referee")
+        user = (
+            User.objects.filter(pk=user_id).select_for_update().update(**validated_data)
+        )
+        referee = (
+            Referee.objects.filter(pk=user_id)
+            .select_for_update()
+            .update(**referee_data)
+        )
