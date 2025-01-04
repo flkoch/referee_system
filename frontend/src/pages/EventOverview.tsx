@@ -1,10 +1,9 @@
 import { useEffect, useState, ChangeEvent, useMemo } from "react"
 import { Form } from "react-bootstrap";
-import api from "../lib/auth";
-import EventList from "../components/Events";
+import EventList from "../features/Events/components/EventList";
 import { type EventType } from "../lib/types";
-import { formattedDate } from "../lib/helper";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { filterWrapperText, getEvents } from "../features/Events/utils/Events";
 
 function EventOverview() {
     const [events, setEvents] = useState<EventType[]>([]);
@@ -13,35 +12,10 @@ function EventOverview() {
 
     useEffect(() => {
         setIsLoading(true);
-        getEvents();
+        getEvents(setEvents);
         setIsLoading(false);
     }, [])
 
-    async function getEvents() {
-        api.get("/api/events/future/")
-            .then((res) => res.data)
-            .then((data) => setEvents(data))
-            .catch((error) => alert(error));
-    };
-    function includes(text: string, fields: string[]) {
-        const lowerCaseText = text.toLowerCase()
-        for (var i = 0; i < fields.length; i++) {
-            if (fields[i].toLowerCase().includes(lowerCaseText)) return true;
-        }
-        return false;
-    }
-    function filterWrapperText(text: string) {
-        if (text.length == 0) return (_event: EventType) => true;
-        return (event: EventType) => {
-            return includes(text, [ // search in the following fields
-                event.name,
-                event.info,
-                formattedDate(event.start, event.end),
-                event.location.name,
-                event.location.address.city,
-            ])
-        };
-    }
     function updateSearch(e: ChangeEvent<HTMLInputElement>) {
         if (e == undefined) return;
         e.preventDefault()

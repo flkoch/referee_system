@@ -1,37 +1,42 @@
 import { useState, FormEvent } from "react";
-import api from "../lib/auth";
-import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../lib/constants";
-import LoadingIndicator from "./LoadingIndicator";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../../lib/constants";
+import { getUser } from "../../../lib/auth";
+import api from "../../../lib/api";
+import LoadingIndicator from "../../../components/LoadingIndicator";
 
-function UserForm({ route, method }: { route: any; method: any }) {
+type UserFormProps = {
+    route: string;
+    method: "login" | "register";
+}
+function UserForm({ route, method }: UserFormProps) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
 
-    const name = method === "login" ? "Login" : "Register"
+    const name = method === "login" ? "Login" : "Register";
 
     const handleSubmit = async (event: FormEvent) => {
         setIsLoading(true);
-        event.preventDefault()
+        event.preventDefault();
         try {
             const res = await api.post(route, { username, password })
             if (method === "login") {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-                navigate("/events")
+                navigate("/events");
             } else {
-                navigate("/login")
+                navigate("/login");
             }
         } catch (error) {
 
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
     }
-    return (
+    return (getUser() === undefined) ? (
         <div className="container">
             <h1>{name}</h1>
             <Form onSubmit={handleSubmit} className="mt-4">
@@ -53,7 +58,7 @@ function UserForm({ route, method }: { route: any; method: any }) {
                 </Form.Group>
             </Form>
         </div>
-    )
+    ) : <Navigate to="/" />
 }
 
 export default UserForm

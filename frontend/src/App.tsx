@@ -25,6 +25,7 @@ function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
     <Route path="/" element={<MainLayout />}>
+      <Route index element={<Navigate to="/events/" />} />
       <Route path="events/" element={
         <Suspense fallback={<LoadingIndicator size="15rem" />}>
           <ProtectedRoute>
