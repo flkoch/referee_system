@@ -1,4 +1,4 @@
-import { useEffect, useState, ChangeEvent } from "react"
+import { useEffect, useState, ChangeEvent, useMemo } from "react"
 import { Form } from "react-bootstrap";
 import api from "../lib/auth";
 import EventList from "../components/Events";
@@ -6,7 +6,7 @@ import { type EventType } from "../lib/types";
 import { formattedDate } from "../lib/helper";
 import LoadingIndicator from "../components/LoadingIndicator";
 
-function Home() {
+function EventOverview() {
     const [events, setEvents] = useState<EventType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -17,9 +17,8 @@ function Home() {
         setIsLoading(false);
     }, [])
 
-    const getEvents = () => {
-        api
-            .get("/api/events/future/")
+    async function getEvents() {
+        api.get("/api/events/future/")
             .then((res) => res.data)
             .then((data) => setEvents(data))
             .catch((error) => alert(error));
@@ -48,7 +47,7 @@ function Home() {
         e.preventDefault()
         setSearchTerm(e.target.value.trimStart());
     }
-    const filteredEvents = events.filter(filterWrapperText(searchTerm))
+    const filteredEvents = useMemo(() => events.filter(filterWrapperText(searchTerm)), [events, searchTerm])
     return (
         <>
             <h1 className="mb-4">Upcoming Events</h1>
@@ -60,4 +59,4 @@ function Home() {
     );
 }
 
-export default Home
+export default EventOverview

@@ -1,11 +1,14 @@
+import { lazy, Suspense } from "react";
 import { Route, Navigate, createBrowserRouter, createRoutesFromElements, RouterProvider } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/EventList";
-import EventDetail from "./pages/EventDetail";
-import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/ProtectedRoute";
-import MainLayout from "./layouts/MainLayout";
+import LoadingIndicator from "./components/LoadingIndicator";
+
+const EventOverview = lazy(() => import("./pages/EventOverview"));
+const EventDetail = lazy(() => import("./pages/EventDetail"));
+const Login = lazy(() => import("./pages/Login"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const MainLayout = lazy(() => import("./layouts/MainLayout"));
+const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
+const Register = lazy(() => import("./pages/Register"));
 
 
 function Logout() {
@@ -23,19 +26,38 @@ function App() {
   const router = createBrowserRouter(createRoutesFromElements(
     <Route path="/" element={<MainLayout />}>
       <Route path="events/" element={
-        <ProtectedRoute>
-          <Home />
-        </ProtectedRoute>
+        <Suspense fallback={<LoadingIndicator size="15rem" />}>
+          <ProtectedRoute>
+            <EventOverview />
+          </ProtectedRoute>
+        </Suspense>
       } />
       <Route path="events/:pk" element={
-        <ProtectedRoute>
-          <EventDetail />
-        </ProtectedRoute>
+        <Suspense fallback={<LoadingIndicator size="15rem" />}>
+          <ProtectedRoute>
+            <EventDetail />
+          </ProtectedRoute>
+        </Suspense>
       } />
-      <Route path="login" element={<Login />} />
-      <Route path="logout" element={<Logout />} />
-      <Route path="register" element={<RegisterandLogout />} />
-      <Route path="*" element={<NotFound />} />
+      <Route path="login" element={
+        <Suspense fallback={<LoadingIndicator size="15rem" />}>
+          <Login />
+        </Suspense>
+      } />
+      <Route path="logout" element={
+        <Suspense fallback={<LoadingIndicator size="15rem" />}>
+          <Logout />
+        </Suspense>
+      } />
+      <Route path="register" element={
+        <Suspense fallback={<LoadingIndicator size="15rem" />}>
+          <RegisterandLogout />
+        </Suspense>} />
+      <Route path="*" element={
+        <Suspense fallback={<LoadingIndicator size="15rem" />}>
+          <NotFound />
+        </Suspense>
+      } />
     </Route>
   ))
 

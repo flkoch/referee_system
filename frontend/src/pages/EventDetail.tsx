@@ -6,7 +6,6 @@ import api, { getUser } from "../lib/auth";
 import { type CompetitionType, type EventType, type LicenseType } from "../lib/types"
 import LoadingIndicator from "../components/LoadingIndicator";
 import { LocationAddress } from "../components/Location";
-import { AxiosError } from "axios";
 
 function EventDetail() {
     const [event, setEvent] = useState<EventType | null>(null);
