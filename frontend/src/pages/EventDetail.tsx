@@ -4,9 +4,9 @@ import { Button, Card, Col, Container, ListGroup, ListGroupItem, Row } from "rea
 import { type CompetitionType, type EventType, type LicenseType } from "../lib/types"
 import LoadingIndicator from "../components/LoadingIndicator";
 import api from "../api";
-import { useNotify } from "../layouts/MainLayout";
 import { LocationAddress } from "../components/Location";
 import { getUser } from "../lib/auth";
+import { toast } from "react-toastify";
 
 function EventDetail() {
     const [event, setEvent] = useState<EventType | null>(null);
@@ -103,12 +103,11 @@ function ListGroupItemIfLargerNumber({ children, variable, value = 0 }: { childr
     }
 }
 function handleApply(id: number) {
-    const { notify } = useNotify();
     return async function handlerFunction(_event: MouseEvent) {
         try {
             const res = await api.post("/api/applications/", { "competition": id, "user": getUser() })
             if (res.status === 201) {
-                notify({ "id": id, "title": "Application Received", "text": "Your application was received and registered.", "type": "success", "created": Date.now() })
+                toast.success("Your application was received and registered.")
             }
         } catch (error) {
             alert(error)

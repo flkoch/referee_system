@@ -43,13 +43,6 @@ export type CompetitionType = {
     head_referee: number | null;
     modified: string;
 }
-export type Notification = {
-    id?: number;
-    type: "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "light" | "dark";
-    title: string;
-    text: string;
-    created: Date;
-}
 export type LicenseType = {
     id: number;
     name: string;
