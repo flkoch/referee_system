@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueForYearValidator, UniqueTogetherValidator
 
 from helper.serializers import LocationSerializer
 from competition.models import (
@@ -15,6 +16,13 @@ class AccommodationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Accommodation
         fields = ["id", "event", "name", "start", "end", "address", "info", "type"]
+        validators = [
+            UniqueTogetherValidator(
+                Accommodation.objects.all(),
+                fields=["name", "event"],
+                message="The accommodation name must be unique for each event.",
+            )
+        ]
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
@@ -34,7 +42,13 @@ class ApplicationSerializer(serializers.ModelSerializer):
             "role",
         ]
         read_only_fields = ["created", "modified"]
-        required = False
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Application.objects.all(),
+                fields=["user", "competition"],
+                message="There must not be more than one application for an event per referee.",
+            )
+        ]
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
@@ -90,6 +104,14 @@ class EventSerializer(serializers.ModelSerializer):
             "accommodations",
         ]
         read_only_fields = ["created", "modified", "creator"]
+        validators = [
+            UniqueForYearValidator(
+                queryset=Event.objects.all(),
+                field="slug",
+                date_field="start",
+                message="Slug must be unique for each calendar year.",
+            )
+        ]
 
 
 class InvitationSerializer(serializers.ModelSerializer):

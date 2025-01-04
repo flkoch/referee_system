@@ -1,12 +1,12 @@
 import { MouseEvent, ReactNode, useEffect, useState } from "react"
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Button, Card, Col, Container, ListGroup, ListGroupItem, Row } from "react-bootstrap";
+import api, { getUser } from "../lib/auth";
 import { type CompetitionType, type EventType, type LicenseType } from "../lib/types"
 import LoadingIndicator from "../components/LoadingIndicator";
 import { LocationAddress } from "../components/Location";
-import api from "../lib/auth";
-import { getUser } from "../lib/auth";
-import { toast } from "react-toastify";
+import { AxiosError } from "axios";
 
 function EventDetail() {
     const [event, setEvent] = useState<EventType | null>(null);
@@ -120,14 +120,23 @@ function ListGroupItemIfLargerNumber({ children, variable, value = 0 }: { childr
 }
 function handleApply(id: number) {
     return async function handlerFunction(_event: MouseEvent) {
-        try {
-            const res = await api.post("/api/applications/", { "competition": id, "user": getUser() })
-            if (res.status === 201) {
-                toast.success("Your application was received and registered.")
-            }
-        } catch (error) {
-            console.error(error)
-        }
+        api.post("/api/applications/", { "competition": id, "user": getUser() })
+            .then((res) => {
+                if (res.status === 201) {
+                    toast.success("Your application was received and registered.")
+                }
+            })
+            .catch((error) => {
+                if (error.status === 400) {
+                    for (const [_key, value] of Object.entries(error.response?.data)) {
+                        toast.error(String(value))
+                    }
+                } else if (error.status === 403) {
+                    toast.error("You are not allowed to apply.");
+                } else {
+                    console.error(error);
+                }
+            })
     }
 }
 function extractDay(date: string) {

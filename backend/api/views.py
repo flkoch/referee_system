@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.utils import timezone
 
 from rest_framework import generics
@@ -9,7 +10,7 @@ from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticated,
 )
-from rest_framework.response import Response
+from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 
 from api.serializers import UserCreateSerializer, UserSerializer
 
@@ -91,7 +92,7 @@ class CreateAccommodationView(generics.CreateAPIView):
     permission_classes = [DjangoModelPermissions]
 
 
-class CreateListApplicationView(generics.CreateAPIView):
+class CreateListApplicationView(generics.ListCreateAPIView):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated]
 
@@ -101,6 +102,13 @@ class CreateListApplicationView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         if serializer.is_valid():
+            if serializer.validated_data.get("user") != self.request.user.referee:
+                print("Applying for someone else.")
+                raise PermissionDenied(
+                    detail="You are not allowed to apply someone else."
+                )
+            else:
+                print("Applying for yourself.")
             serializer.save(user=self.request.user.referee)
         else:
             print(serializer.errors)
@@ -112,14 +120,16 @@ class DeleteApplicationView(generics.DestroyAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Application.objects.filter(user=user)
+        return Application.objects.filter(user=user).filter(
+            status=Application.Status.APPLIED
+        )
 
     def perform_destroy(self, instance):
         if timezone.now() - instance.created < timezone.timedelta(minutes=30):
             return super().perform_destroy(instance)
         instance.status = Application.Status.CANCLED
         instance.save()
-        return Response(instance, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        raise MethodNotAllowed(instance)
 
 
 class CreateInvitationView(generics.CreateAPIView):
