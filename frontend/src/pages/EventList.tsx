@@ -3,8 +3,8 @@ import { Form } from "react-bootstrap";
 import api from "../api";
 import EventList from "../components/Events";
 import { type EventType } from "../lib/types";
-import { formattedDate } from "../lib/functions";
-import LoadingIndicator from "../components/LoadinIndicator";
+import { formattedDate } from "../lib/helper";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 function Home() {
     const [events, setEvents] = useState<EventType[]>([]);

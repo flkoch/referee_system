@@ -3,7 +3,7 @@ export type EventType = {
     id: number;
     info: string;
     location: LocationType;
-    competition?: CompetitionType;
+    competitions?: CompetitionType[];
     slug: string;
     creator: number | null;
     created: string;
@@ -25,12 +25,47 @@ export type AddressType = {
     country: string | null;
 }
 export type CompetitionType = {
-
+    id: number;
+    event: number;
+    category: number[];
+    competition_fields: number | null;
+    invitor: number;
+    desired_level: number;
+    minimum_level: number;
+    start: string;
+    info: string;
+    observers: number | null;
+    referees: number | null;
+    duration: string;
+    application: boolean;
+    application_open: string | null;
+    application_close: string | null;
+    head_referee: number | null;
+    modified: string;
 }
 export type Notification = {
-    id: number;
+    id?: number;
     type: "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "light" | "dark";
     title: string;
     text: string;
     created: Date;
+}
+export type LicenseType = {
+    id: number;
+    name: string;
+    parent?: number;
+}
+
+export type ApplicationType = {
+    id: number;
+    user: number;
+    created: string;
+    modified: string;
+    accommodation?: number;
+    accommodation_arrival?: string;
+    accommodation_departure?: string;
+    accommodation_remark?: string;
+    competition: number;
+    status: number;
+    role?: number;
 }

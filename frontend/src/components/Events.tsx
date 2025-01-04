@@ -1,13 +1,13 @@
 import { Button, Card, Col, Container, Row } from "react-bootstrap"
 import { type EventType } from "../lib/types"
-import { formattedDate } from "../lib/functions"
+import { formattedDate } from "../lib/helper"
 import { useNavigate } from "react-router-dom"
 
 
 function EventCard({ event }: { event: EventType }) {
     const navigate = useNavigate()
     function openDetail() {
-        navigate(`/event/${new Date(event.start).getUTCFullYear()}/${event.slug}`)
+        navigate(`/events/${event.id}`)
     }
     return (
         <Col>

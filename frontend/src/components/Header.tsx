@@ -8,7 +8,7 @@ export function Header({ toggleFunction }: { toggleFunction: CallableFunction })
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav" role={null}>
                     <Nav>
-                        <Nav.Link href="/">Events</Nav.Link>
+                        <Nav.Link href="/events">Events</Nav.Link>
                     </Nav>
                     <Nav>
                         <Nav.Link href="/profile">Profile</Nav.Link>

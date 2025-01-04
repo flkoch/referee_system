@@ -1,7 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate, createBrowserRouter, createRoutesFromElements, RouterProvider } from "react-router-dom";
+import { Route, Navigate, createBrowserRouter, createRoutesFromElements, RouterProvider } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Home from "./pages/Home";
+import Home from "./pages/EventList";
 import EventDetail from "./pages/EventDetail";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -22,19 +22,19 @@ function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
     <Route path="/" element={<MainLayout />}>
-      <Route index element={
+      <Route path="events/" element={
         <ProtectedRoute>
           <Home />
         </ProtectedRoute>
       } />
-      <Route path="/event/:year/:slug" element={
+      <Route path="events/:pk" element={
         <ProtectedRoute>
           <EventDetail />
         </ProtectedRoute>
       } />
-      <Route path="/login" element={<Login />} />
-      <Route path="/logout" element={<Logout />} />
-      <Route path="/register" element={<RegisterandLogout />} />
+      <Route path="login" element={<Login />} />
+      <Route path="logout" element={<Logout />} />
+      <Route path="register" element={<RegisterandLogout />} />
       <Route path="*" element={<NotFound />} />
     </Route>
   ))

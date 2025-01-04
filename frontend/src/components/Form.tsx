@@ -1,8 +1,8 @@
 import { useState, FormEvent } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
-import LoadingIndicator from "./LoadinIndicator";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../lib/constants";
+import LoadingIndicator from "./LoadingIndicator";
 import { Button, Col, Form, Row } from "react-bootstrap";
 
 function UserForm({ route, method }: { route: any; method: any }) {
@@ -21,7 +21,7 @@ function UserForm({ route, method }: { route: any; method: any }) {
             if (method === "login") {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-                navigate("/")
+                navigate("/events")
             } else {
                 navigate("/login")
             }

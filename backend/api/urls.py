@@ -3,9 +3,11 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from api.views import (
+    CreateListApplicationView,
     CreateUserView,
     DetailEventView,
     ListFurtureEventsView,
+    ListLicenseView,
     ListLocationsView,
     UpdateUserView,
     ListEventsView,
@@ -22,4 +24,10 @@ urlpatterns = [
     path("events/future/", ListFurtureEventsView.as_view(), name="event-list-future"),
     path("events/<int:pk>/", DetailEventView.as_view(), name="event-list"),
     path("locations/", ListLocationsView.as_view(), name="locations-list"),
+    path("licenses/", ListLicenseView.as_view(), name="license-list"),
+    path(
+        "applications/",
+        CreateListApplicationView.as_view(),
+        name="application-create-list",
+    ),
 ]

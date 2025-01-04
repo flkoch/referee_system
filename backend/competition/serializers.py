@@ -34,6 +34,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
             "role",
         ]
         read_only_fields = ["created", "modified"]
+        required = False
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
@@ -71,6 +72,7 @@ class CompetitionCategorySerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     location = LocationSerializer(many=False, read_only=True)
     competitions = CompetitionSerializer(many=True, read_only=True)
+
     class Meta:
         model = Event
         fields = [

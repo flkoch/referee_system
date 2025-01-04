@@ -31,6 +31,8 @@ from competition.serializers import (
 )
 from helper.models import Address, Location
 from helper.serializers import AddressSerializer, LocationSerializer
+from referee.models import RefereeLicense
+from referee.serializers import RefereeLicenseSerializer
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -63,6 +65,7 @@ class ListFurtureEventsView(generics.ListAPIView):
     queryset = Event.objects.filter(start__gte=timezone.now())
     serializer_class = EventSerializer
     permission_classes = [IsAuthenticated]
+
 
 class DetailEventView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
@@ -98,7 +101,7 @@ class CreateListApplicationView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         if serializer.is_valid():
-            serializer.save(user=self.request.user)
+            serializer.save(user=self.request.user.referee)
         else:
             print(serializer.errors)
 
@@ -136,7 +139,14 @@ class CreateLocationView(generics.CreateAPIView):
     serializer_class = LocationSerializer
     permission_classes = [DjangoModelPermissions]
 
+
 class ListLocationsView(generics.ListAPIView):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class ListLicenseView(generics.ListAPIView):
+    queryset = RefereeLicense.objects.all()
+    serializer_class = RefereeLicenseSerializer
     permission_classes = [IsAuthenticated]

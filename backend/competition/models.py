@@ -233,12 +233,18 @@ class Application(models.Model):
         related_name="applications",
     )
     status = models.IntegerField(choices=Status, default=Status.APPLIED)
-    role = models.ForeignKey(RefereeRole, on_delete=models.PROTECT)
+    role = models.ForeignKey(
+        RefereeRole,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
 
     class Meta:
         order_with_respect_to = "user"
         verbose_name = _("Application")
-        verbose_name_plural = _("Applicatoins")
+        verbose_name_plural = _("Applications")
 
 
 class Invitation(models.Model):
