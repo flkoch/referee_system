@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import { Button, Card, Col, Container, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import { type CompetitionType, type EventType, type LicenseType } from "../lib/types"
 import LoadingIndicator from "../components/LoadingIndicator";
-import api from "../api";
 import { LocationAddress } from "../components/Location";
+import api from "../lib/auth";
 import { getUser } from "../lib/auth";
 import { toast } from "react-toastify";
 
@@ -16,12 +16,28 @@ function EventDetail() {
         api.get(`/api/events/${pk}`)
             .then((res) => res.data)
             .then((data) => setEvent(data))
-            .catch((error) => alert(error));
+            .catch((error) => {
+                if (error.status === 401) {
+                    toast.error("You need to log-in.")
+                } else if (error.code == "ERR_CANCELED") {
+                    console.info("Redundant request canceled: ", error)
+                } else {
+                    console.error(error)
+                }
+            });
         api.get("/api/licenses/")
             .then((res) => res.data)
             .then((data) => setLicenses(data))
-            .catch((error) => alert(error))
-    }, [])
+            .catch((error) => {
+                if (error.status === 401) {
+                    toast.error("You need to log-in.")
+                } else if (error.code == "ERR_CANCELED") {
+                    console.info("Redundant request canceled: ", error)
+                } else {
+                    console.error(error)
+                }
+            });
+    }, []);
 
     return (
         <>
@@ -110,7 +126,7 @@ function handleApply(id: number) {
                 toast.success("Your application was received and registered.")
             }
         } catch (error) {
-            alert(error)
+            console.error(error)
         }
     }
 }

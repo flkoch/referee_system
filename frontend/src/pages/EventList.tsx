@@ -1,6 +1,6 @@
 import { useEffect, useState, ChangeEvent } from "react"
 import { Form } from "react-bootstrap";
-import api from "../api";
+import api from "../lib/auth";
 import EventList from "../components/Events";
 import { type EventType } from "../lib/types";
 import { formattedDate } from "../lib/helper";

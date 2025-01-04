@@ -1,5 +1,5 @@
 import { useState, FormEvent } from "react";
-import api from "../api";
+import api from "../lib/auth";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../lib/constants";
 import LoadingIndicator from "./LoadingIndicator";
