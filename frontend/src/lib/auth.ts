@@ -22,12 +22,17 @@ export async function refreshToken(): Promise<string | null> {
     }
 }
 
-export function getUser() {
+export function getUser(): number | undefined {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (!token) return;
     const decoded = jwtDecode(token);
     // @ts-ignore: library issue
-    return decoded.user_id
+    const id = decoded.user_id;
+    return id
+}
+
+export function isAuthenticated(): boolean {
+    return getUser() !== undefined;
 }
 
 export async function validToken(): Promise<string | null> {

@@ -62,3 +62,11 @@ export type ApplicationType = {
     status: number;
     role?: number;
 }
+
+export type UserType = {
+    id?: number;
+    firstname?: string;
+    lastname?: string;
+    isAuthenticated?: boolean;
+}
+export type ThemeLiteral = "light" | "dark";
