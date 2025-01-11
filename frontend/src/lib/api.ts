@@ -1,5 +1,4 @@
 import axios from "axios";
-import { toast } from "react-toastify";
 import { validToken } from "./auth";
 
 export const api = axios.create({
@@ -44,19 +43,9 @@ api.interceptors.response.use(
     }
 )
 
-export async function getRequest(url: string, callback: CallableFunction) {
-    api.get(url)
+export async function getRequest(url: string, signal: AbortSignal) {
+    return api.get(url, { signal })
         .then((res) => res.data)
-        .then((data) => callback(data))
-        .catch((error) => {
-            if (error.status === 401) {
-                toast.error("You need to log-in.");
-            } else if (error.code == "ERR_CANCELED") {
-                console.info("Redundant request canceled: ", error);
-            } else {
-                console.error(error);
-            }
-        })
 }
 
 export default api

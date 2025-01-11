@@ -22,14 +22,14 @@ export function filterWrapperText(text: string) {
     };
 }
 
-export async function getEvents(saveState: CallableFunction) {
-    getRequest("/api/events/future/", saveState)
+export async function getEvents(signal: AbortSignal) {
+    return getRequest("/api/events/future/", signal)
 }
 
-export async function getEvent(pk: number, saveState: CallableFunction) {
-    getRequest(`/api/events/${pk}`, saveState)
+export async function getEvent(pk: number, signal: AbortSignal) {
+    return getRequest(`/api/events/${pk}`, signal)
 }
 
-export async function getLicenses(saveState: CallableFunction) {
-    getRequest("/api/licenses/", saveState);
+export async function getLicenses(signal: AbortSignal) {
+    return getRequest("api/licenses/", signal)
 }

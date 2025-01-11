@@ -1,26 +1,31 @@
-import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom";
 import NotFound from "./NotFound";
-import { type EventType, type LicenseType } from "../lib/types"
 import LoadingIndicator from "../components/LoadingIndicator";
 import EventDetailRender from "../features/Events/components/EventDetail";
 import { getEvent, getLicenses } from "../features/Events/utils/Events";
+import { useQuery } from "@tanstack/react-query";
 
 function EventPage() {
-    const [event, setEvent] = useState<EventType | null>(null);
     const { pk } = useParams()
-    const [licenses, setLicenses] = useState<LicenseType[]>([])
     if (pk === undefined || Number.isNaN(parseInt(pk))) {
         return <NotFound />
     }
-    useEffect(() => {
-        getEvent(parseInt(pk), setEvent);
-        getLicenses(setLicenses);
-    }, []);
+
+    const eventQuery = useQuery({
+        queryKey: ["event", pk],
+        queryFn: (obj) => getEvent(parseInt(pk), obj.signal),
+        staleTime: 1000 * 60 * 10,
+    })
+
+    const licenseQuery = useQuery({
+        queryKey: ["license"],
+        queryFn: (obj) => getLicenses(obj.signal),
+        staleTime: 1000 * 60 * 10,
+    })
 
     return (
         <>
-            {(event == null) ? <LoadingIndicator size="15rem" /> : <EventDetailRender event={event} licenses={licenses} />}
+            {(eventQuery.isLoading) ? <LoadingIndicator size="15rem" /> : <EventDetailRender event={eventQuery.data} licenses={licenseQuery.data} />}
         </>
     )
 }
