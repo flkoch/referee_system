@@ -1,15 +1,24 @@
 import { ReactNode, } from "react"
 import { Container, Row } from "react-bootstrap";
-import { type EventType, type LicenseType } from "../../../lib/types"
+import { useQuery } from "@tanstack/react-query";
 import { LocationAddress } from "../../../components/Location";
 import CompetitionDetail from "./CompetitionDetail";
+import { getEvent } from "../utils/Events";
+import { CompetitionType } from "../../../lib/types";
+import LoadingIndicator from "../../../components/LoadingIndicator";
 
-function EventDetailRender({ event, licenses }: { event: EventType, licenses: LicenseType[] }) {
+function EventDetailRender({ pk }: { pk: number }) {
+    const eventQuery = useQuery({
+        queryKey: ["event", pk],
+        queryFn: (obj) => getEvent(pk, obj.signal),
+        staleTime: 1000 * 60 * 10,
+    })
+
     function Structure({ children }: { children: ReactNode }) {
-        if (event.competitions == undefined || event.competitions == null) {
+        if (eventQuery.data.competitions == undefined || eventQuery.data.competitions == null) {
             return children
         }
-        if (event.competitions.length < 2) {
+        if (eventQuery.data.competitions.length < 2) {
             return children
         }
         return (
@@ -20,15 +29,16 @@ function EventDetailRender({ event, licenses }: { event: EventType, licenses: Li
             </Container>
         )
     }
+    if (eventQuery.isLoading) return <LoadingIndicator size="15rem" />;
     return (
         <>
-            <h1>{event.name}</h1>
-            <LocationAddress location={event.location}>
+            <h1>{eventQuery.data.name}</h1>
+            <LocationAddress location={eventQuery.data.location}>
                 &nbsp;&ndash;&nbsp;
             </LocationAddress>
             <Structure>
-                {event.competitions?.map((elem) => {
-                    return <CompetitionDetail competition={elem} licenses={licenses} key={elem.id} />
+                {eventQuery.data.competitions?.map((elem: CompetitionType) => {
+                    return <CompetitionDetail competition={elem} key={elem.id} />
                 })}
             </Structure>
         </>

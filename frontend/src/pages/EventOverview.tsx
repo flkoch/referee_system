@@ -28,7 +28,7 @@ function EventOverview() {
             <Form>
                 <Form.Control tabIndex={1} aria-label="Search Events" type="text" placeholder="Search" onChange={updateSearch} value={searchTerm}></Form.Control>
             </Form>
-            {eventsQuery.isLoading ? <LoadingIndicator /> : <EventList events={eventsQuery.data} searchTerm={searchTerm} />}
+            {eventsQuery.isLoading ? <LoadingIndicator size="15rem" /> : <EventList events={eventsQuery.data} searchTerm={searchTerm} />}
         </>
     );
 }

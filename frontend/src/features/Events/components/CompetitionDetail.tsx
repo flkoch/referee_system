@@ -1,10 +1,18 @@
 import { Button, Card, Col, ListGroup, ListGroupItem } from "react-bootstrap";
-import { type CompetitionType, type LicenseType } from "../../../lib/types"
-import ListGroupItemIfLargerNumber from "./ListGroupItem";
+import { useQuery } from "@tanstack/react-query";
+import { type CompetitionType } from "../../../lib/types"
 import { extractDay, license } from "../../../lib/helper";
 import { handleApply } from "../utils/Competition";
+import { getLicenses } from "../utils/Events";
+import ListGroupItemIfLargerNumber from "./ListGroupItem";
+import LoadingIndicator from "../../../components/LoadingIndicator";
 
-function CompetitionDetail({ competition, licenses }: { competition: CompetitionType, licenses: LicenseType[] }) {
+function CompetitionDetail({ competition }: { competition: CompetitionType }) {
+    const licenseQuery = useQuery({
+        queryKey: ["license"],
+        queryFn: (obj) => getLicenses(obj.signal),
+        staleTime: 1000 * 60 * 10,
+    })
     return (
         <>
             <Col>
@@ -25,10 +33,13 @@ function CompetitionDetail({ competition, licenses }: { competition: Competition
                             <ListGroupItemIfLargerNumber variable={competition.observers}>
                                 Observers: {competition.observers}
                             </ListGroupItemIfLargerNumber>
-                            <ListGroupItem>
-                                License: {license(competition.desired_level, licenses)}
-                                {competition.desired_level != competition.minimum_level && ` (minimum: ${license(competition.minimum_level, licenses)})`}
-                            </ListGroupItem>
+                            {(licenseQuery.isLoading) ?
+                                <LoadingIndicator /> :
+                                <ListGroupItem>
+                                    License: {license(competition.desired_level, licenseQuery.data)}
+                                    {competition.desired_level != competition.minimum_level && ` (minimum: ${license(competition.minimum_level, licenseQuery.data)})`}
+                                </ListGroupItem>
+                            }
                         </ListGroup>
                         <Button onClick={handleApply(competition.id)}>Apply</Button>
                     </Card.Body>
