@@ -1,9 +1,10 @@
-import { createContext, useState } from "react";
+import { createContext, Suspense, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { ThemeLiteral, UserType } from "../lib/types";
+import { getUser } from "../lib/auth";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
-import { ThemeLiteral, UserType } from "../lib/types";
 
 type ContextProp = {
     user: UserType;
@@ -14,7 +15,8 @@ type ContextProp = {
 export const UserContext = createContext<ContextProp>({ "user": {}, "setUser": () => { }, "theme": "light", "toggleTheme": () => { } });
 
 function MainLayout() {
-    const [user, setUser] = useState<UserType>({ "isAuthenticated": false });
+    const id = getUser();
+    const [user, setUser] = useState<UserType>({ id, "isAuthenticated": id !== undefined });
     const [theme, setTheme] = useState<ThemeLiteral>("light");
     function toggleTheme(_event: MouseEvent): void {
         setTheme((prev) => {
@@ -28,9 +30,11 @@ function MainLayout() {
             <header>
                 <Header />
             </header>
-            <main className="container">
-                <Outlet />
-            </main>
+            <Suspense>
+                <main className="container">
+                    <Outlet />
+                </main>
+            </Suspense>
             <ToastContainer autoClose={10000} />
             <Footer />
         </UserContext.Provider>

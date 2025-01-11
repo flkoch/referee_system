@@ -1,24 +1,20 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { validToken } from "../lib/auth";
 import LoadingIndicator from "./LoadingIndicator";
+import { UserContext } from "../layouts/MainLayout";
 
 function ProtectedRoute({ children }: { children: any }): any {
-    const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null)
+    const { user, setUser } = useContext(UserContext);
 
     useEffect(() => {
-        auth().catch(() => setIsAuthorized(false))
+        validToken().catch(() => setUser({ "isAuthorized": false }))
     }, [])
 
-    async function auth() {
-        const token = await validToken();
-        setIsAuthorized(token !== null)
-    }
-
-    if (isAuthorized === null) {
+    if (user.isAuthenticated === undefined) {
         return <LoadingIndicator />
     }
-    return isAuthorized ? children : <Navigate to="/login" />
+    return user.isAuthenticated ? children : <Navigate to="/login" />
 }
 
 export default ProtectedRoute

@@ -4,6 +4,7 @@ import { REFRESH_TOKEN, ACCESS_TOKEN } from "./constants";
 
 export async function refreshToken(): Promise<string | null> {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+    if (refreshToken == null) return null;
     const url = import.meta.env.VITE_API_URL;
     try {
         const res = await axios.post(url + "/api/token/refresh/", {
@@ -22,23 +23,23 @@ export async function refreshToken(): Promise<string | null> {
     }
 }
 
-export function getUser(): number | undefined {
+export function getUser(tk: string | null = null): number | undefined {
+    if (tk) {
+        // @ts-ignore: library issue
+        return jwtDecode(tk).user_id
+    }
     const token = localStorage.getItem(ACCESS_TOKEN);
-    if (!token) return;
-    const decoded = jwtDecode(token);
+    if (!token) {
+        return;
+    }
     // @ts-ignore: library issue
-    const id = decoded.user_id;
-    return id
-}
-
-export function isAuthenticated(): boolean {
-    return getUser() !== undefined;
+    return jwtDecode(token).user_id;
 }
 
 export async function validToken(): Promise<string | null> {
     var token = localStorage.getItem(ACCESS_TOKEN);
     if (!token) {
-        return null;
+        return refreshToken();
     }
     const decoded = jwtDecode(token);
     const tokenExpiration = decoded.exp;
