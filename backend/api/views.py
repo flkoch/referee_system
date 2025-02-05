@@ -32,14 +32,23 @@ from competition.serializers import (
 )
 from helper.models import Address, Location
 from helper.serializers import AddressSerializer, LocationSerializer
-from referee.models import RefereeLicense
-from referee.serializers import RefereeLicenseSerializer
+from referee.models import Examination, RefereeLicense
+from referee.serializers import ExaminationSerializer, RefereeLicenseSerializer
 
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
     permission_classes = [AllowAny]
+
+
+class DetailUserView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.filter(id=user.id)
 
 
 class UpdateUserView(generics.RetrieveUpdateAPIView):
@@ -103,12 +112,9 @@ class CreateListApplicationView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         if serializer.is_valid():
             if serializer.validated_data.get("user") != self.request.user.referee:
-                print("Applying for someone else.")
                 raise PermissionDenied(
                     detail="You are not allowed to apply someone else."
                 )
-            else:
-                print("Applying for yourself.")
             serializer.save(user=self.request.user.referee)
         else:
             print(serializer.errors)
@@ -138,6 +144,12 @@ class CreateInvitationView(generics.CreateAPIView):
     permission_classes = [DjangoModelPermissions]
 
 
+class UpdateAddressView(generics.RetrieveUpdateAPIView):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+
 class CreateAddressView(generics.CreateAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
@@ -156,7 +168,22 @@ class ListLocationsView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
+class DetailLocationView(generics.RetrieveUpdateAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
+    permission_classes = [IsAuthenticated]
+
+
 class ListLicenseView(generics.ListAPIView):
     queryset = RefereeLicense.objects.all()
     serializer_class = RefereeLicenseSerializer
     permission_classes = [IsAuthenticated]
+
+
+class ListExaminationsView(generics.ListAPIView):
+    serializer_class = ExaminationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Examination.objects.filter(candidate=user.referee)

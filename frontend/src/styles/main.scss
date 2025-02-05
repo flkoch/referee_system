@@ -11,3 +11,10 @@ main {
     flex-grow: 1;
 }
 @import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons';
+
+@font-face {
+  font-display: block;
+  font-family: "bootstrap-icons";
+  src: local("bootstrap-icons"), url("bootstrap-icons/font/fonts/bootstrap-icons.woff2") format("woff2"), url("bootstrap-icons/font/fonts/bootstrap-icons.woff") format("woff");
+}

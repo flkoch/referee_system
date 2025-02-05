@@ -29,7 +29,3 @@ export async function getEvents(signal: AbortSignal) {
 export async function getEvent(pk: number, signal: AbortSignal) {
     return getRequest(`/api/events/${pk}`, signal)
 }
-
-export async function getLicenses(signal: AbortSignal) {
-    return getRequest("api/licenses/", signal)
-}

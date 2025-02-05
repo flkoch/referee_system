@@ -23,8 +23,8 @@ class ExaminationSerializer(serializers.ModelSerializer):
 class RefereeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Referee
-        fields = ["id", "user", "address", "dob", "iban", "phone", "mobile"]
-        read_only_fields = ["user"]
+        fields = ["id", "address", "dob", "iban", "phone", "mobile"]
+        read_only_fields = ["id"]
 
 
 class RefereeLicenseSerializer(serializers.ModelSerializer):

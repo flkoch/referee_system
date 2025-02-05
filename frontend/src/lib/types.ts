@@ -69,4 +69,18 @@ export type UserType = {
     lastname?: string;
     isAuthenticated?: boolean;
 }
+
+export type ExamType = {
+    id: number;
+    candidate: number;
+    license: number;
+    chief_examiner?: number;
+    date?: Date;
+    address?: number;
+    grade?: number;
+    passed: boolean;
+    note_internal: string;
+    note_external: string;
+}
+
 export type ThemeLiteral = "light" | "dark";
