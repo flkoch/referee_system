@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from api.views import (
     CreateListApplicationView,
     CreateUserView,
+    DetailCompetitionView,
     DetailEventView,
     DetailLocationView,
     DetailUserView,
@@ -27,7 +28,12 @@ urlpatterns = [
     path("auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("events/", ListEventsView.as_view(), name="event-list"),
     path("events/future/", ListFurtureEventsView.as_view(), name="event-list-future"),
-    path("events/<int:pk>/", DetailEventView.as_view(), name="event-list"),
+    path("events/<int:pk>/", DetailEventView.as_view(), name="event-detail"),
+    path(
+        "competition/<int:pk>/",
+        DetailCompetitionView.as_view(),
+        name="competition-detail",
+    ),
     path("locations/", ListLocationsView.as_view(), name="locations-list"),
     path("locations/<int:pk>/", DetailLocationView.as_view(), name="locations-detail"),
     path("licenses/", ListLicenseView.as_view(), name="license-list"),

@@ -1,6 +1,6 @@
 import { MouseEvent } from "react";
 import { toast } from "react-toastify";
-import api from "../../../lib/api";
+import api, { getRequest } from "../../../lib/api";
 import { getUser } from "../../../lib/auth";
 
 export function handleApply(id: number) {
@@ -23,4 +23,8 @@ export function handleApply(id: number) {
                 }
             })
     }
+}
+
+export async function getCompetition(id: number, signal: AbortSignal) {
+    return getRequest(`/api/competition/${id}`, signal)
 }

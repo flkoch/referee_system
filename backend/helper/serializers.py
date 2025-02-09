@@ -10,7 +10,6 @@ class AddressSerializer(serializers.ModelSerializer):
 
 
 class LocationSerializer(serializers.ModelSerializer):
-    address = AddressSerializer(many=False, read_only=False)
     class Meta:
         model = Location
         fields = ["id", "name", "description", "address"]
@@ -18,12 +17,18 @@ class LocationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         address_data = validated_data.pop("address")
         address = Address.objects.get_or_create(**address_data)
-        location = Location.objects.create(address=address,**validated_data)
+        location = Location.objects.create(address=address, **validated_data)
         return location
 
     def update(self, instance, validated_data):
-        loc_id=        validated_data.pop("id")
+        loc_id = validated_data.pop("id")
         address_data = validated_data.pop("address")
         add_id = address_data.pop("id")
-        address = Address.objects.filter(pk=add_id).select_for_update().update(**address_data)
-        location = Location.objects.filter(pk=loc_id).select_for_update().update(**validated_data)
+        address = (
+            Address.objects.filter(pk=add_id).select_for_update().update(**address_data)
+        )
+        location = (
+            Location.objects.filter(pk=loc_id)
+            .select_for_update()
+            .update(**validated_data)
+        )

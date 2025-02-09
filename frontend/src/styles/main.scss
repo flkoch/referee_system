@@ -13,6 +13,66 @@ main {
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap-icons/font/bootstrap-icons';
 
+.no-show, .declined, .cancled, .not-selected, .applied, .selected, .invited, .participated {
+    border-radius: 0.5rem;
+    border-width: 3px;
+    overflow: hidden;
+}
+.no-show {
+    border-color: $danger;
+    .card-body {
+        background-color: lighten($danger, 40%);
+    }
+}
+.no-show, .declined {
+    .card-header {
+        background-color: $danger;
+        color: $light;
+    }
+}
+.not-selected, .cancled {
+    .card-header {
+        background-color: $gray-200;
+        color: $gray-600;
+    }
+    .card-body {
+        color: $gray-600;
+    }
+}
+.declined {
+    border-color: $red;
+}
+.not-selected {
+    border-color: $orange;
+}
+.cancled {
+    border-color: $gray-200;
+    .card-header {
+        text-decoration: line-through;
+    }
+}
+.applied {
+    border-color: $cyan;
+}
+.selected, .invited, .participated {
+    border-color: $green;
+    .card-header {
+        background-color: $green;
+        color: $white;
+    }
+}
+.invited {
+    .card-body {
+        background-color: lighten($green, 50%);
+    }
+}
+.participated {
+    .card-body {
+        background-color: $green;
+        color: $white;
+    }
+}
+
 @font-face {
   font-display: block;
   font-family: "bootstrap-icons";

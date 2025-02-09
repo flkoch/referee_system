@@ -15,7 +15,7 @@ export type LocationType = {
     id: number;
     name: string;
     description: string;
-    address: AddressType;
+    address: number;
 }
 export type AddressType = {
     street: string;

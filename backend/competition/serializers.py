@@ -114,6 +114,33 @@ class EventSerializer(serializers.ModelSerializer):
         ]
 
 
+class EventOverviewSerializer(serializers.ModelSerializer):
+    location = LocationSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Event
+        fields = [
+            "id",
+            "name",
+            "location",
+            "start",
+            "end",
+        ]
+
+
+class CompetitionOverviewSerializer(serializers.ModelSerializer):
+    event = EventOverviewSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Competition
+        fields = [
+            "id",
+            "event",
+            "start",
+            "info",
+        ]
+
+
 class InvitationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invitation

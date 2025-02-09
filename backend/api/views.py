@@ -25,6 +25,7 @@ from competition.models import (
 from competition.serializers import (
     AccommodationSerializer,
     ApplicationSerializer,
+    CompetitionOverviewSerializer,
     CompetitionSerializer,
     CompetitionCategorySerializer,
     EventSerializer,
@@ -89,6 +90,12 @@ class CreateCompetitionView(generics.CreateAPIView):
     permission_classes = [DjangoModelPermissions]
 
 
+class DetailCompetitionView(generics.RetrieveAPIView):
+    queryset = Competition.objects.all()
+    serializer_class = CompetitionOverviewSerializer
+    permission_classes = [DjangoModelPermissions]
+
+
 class CreateCompetitionCategoryView(generics.CreateAPIView):
     queryset = CompetitionCategory.objects.all()
     serializer_class = CompetitionCategorySerializer
@@ -106,7 +113,7 @@ class CreateListApplicationView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
+        user = self.request.user.referee
         return Application.objects.filter(user=user)
 
     def perform_create(self, serializer):
