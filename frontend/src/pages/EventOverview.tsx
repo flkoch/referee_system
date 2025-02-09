@@ -1,34 +1,27 @@
-import { useState, ChangeEvent } from "react"
+import { useState, ChangeEvent, Suspense } from "react"
 import { Form } from "react-bootstrap";
 import EventList from "../features/Events/components/EventList";
-import LoadingIndicator from "../components/LoadingIndicator";
-import { getEvents } from "../features/Events/utils/Events";
-import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "../hooks/useDebounce";
 
 function EventOverview() {
     const [searchTerm, setSearchTerm] = useState("");
 
-    const eventsQuery = useQuery({
-        queryKey: ["events"],
-        queryFn: (obj) => {
-            return getEvents(obj.signal)
-        },
-        staleTime: 1000 * 60 * 10,
-        gcTime: 1000 * 60 * 60,
-    })
-
+    const debouncedSearchTerm = useDebounce<string>(searchTerm, "")
     function updateSearch(e: ChangeEvent<HTMLInputElement>) {
-        if (e == undefined) return;
         e.preventDefault()
+        if (e == undefined) return;
         setSearchTerm(e.target.value.trimStart());
     }
+
     return (
         <>
             <h1 className="mb-4">Upcoming Events</h1>
-            <Form>
+            <Form onSubmit={(e) => { e.preventDefault() }}>
                 <Form.Control tabIndex={1} aria-label="Search Events" type="text" placeholder="Search" onChange={updateSearch} value={searchTerm}></Form.Control>
             </Form>
-            {eventsQuery.isLoading ? <LoadingIndicator size="15rem" /> : <EventList events={eventsQuery.data} searchTerm={searchTerm} />}
+            <Suspense>
+                <EventList searchTerm={debouncedSearchTerm} />
+            </Suspense>
         </>
     );
 }

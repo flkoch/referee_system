@@ -1,13 +1,15 @@
+import { useNavigate } from "react-router-dom"
 import { Button, Card, Col } from "react-bootstrap"
 import { type EventType } from "../../../lib/types"
 import { formattedDateRange } from "../../../lib/helper"
-import { useNavigate } from "react-router-dom"
+import { useAddressQuery } from "../../../hooks/useQueries"
 
 function openDetail(id: number) {
     const navigate = useNavigate()
     return () => navigate(`/events/${id}`);
 }
 function EventCard({ event }: { event: EventType }) {
+    const addressQuery = useAddressQuery(event.location.address);
     return (
         <Col>
             <Card className="">
@@ -16,7 +18,7 @@ function EventCard({ event }: { event: EventType }) {
                         {formattedDateRange(event.start, event.end)}
                     </p>
                     <p className="">
-                        {event.location.name} ({event.location.address.city})
+                        {event.location.name} ({!addressQuery.isPending && addressQuery.data.city})
                     </p>
                 </Card.Header>
                 <Card.Body>

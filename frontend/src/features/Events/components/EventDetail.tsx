@@ -1,18 +1,13 @@
 import { ReactNode, } from "react"
 import { Container, Row } from "react-bootstrap";
-import { useQuery } from "@tanstack/react-query";
 import { LocationAddress } from "../../../components/Location";
 import CompetitionDetail from "./CompetitionDetail";
-import { getEvent } from "../utils/Events";
 import { CompetitionType } from "../../../lib/types";
 import LoadingIndicator from "../../../components/LoadingIndicator";
+import { useEventQuery } from "../hooks/useEventsQueries";
 
 function EventDetailRender({ pk }: { pk: number }) {
-    const eventQuery = useQuery({
-        queryKey: ["event", pk],
-        queryFn: (obj) => getEvent(pk, obj.signal),
-        staleTime: 1000 * 60 * 10,
-    })
+    const eventQuery = useEventQuery(pk)
 
     function Structure({ children }: { children: ReactNode }) {
         if (eventQuery.data.competitions == undefined || eventQuery.data.competitions == null) {

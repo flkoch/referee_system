@@ -1,13 +1,9 @@
 import { ReactNode } from "react";
 import { LocationType } from "../lib/types";
-import { useQuery } from "@tanstack/react-query";
-import { getAddress } from "../lib/requests";
+import { useAddressQuery } from "../hooks/useQueries";
 
 export function LocationAddress({ location, children = <br /> }: { location: LocationType, children?: ReactNode }) {
-    const addressQuery = useQuery({
-        queryKey: ["address", location.address],
-        queryFn: (obj) => getAddress(location.address, obj.signal)
-    })
+    const addressQuery = useAddressQuery(location.address)
     if (addressQuery.isLoading) return <>{location.name}</>
     return (
         <>

@@ -1,6 +1,6 @@
 import { type EventType } from "../../../lib/types";
-import { formattedDateRange } from "../../../lib/helper";
 import { getRequest } from "../../../lib/api";
+import { formattedDateRange } from "../../../lib/helper";
 
 function includes(text: string, fields: string[]) {
     const lowerCaseText = text.toLowerCase()
@@ -17,7 +17,6 @@ export function filterWrapperText(text: string) {
             event.info,
             formattedDateRange(event.start, event.end),
             event.location.name,
-            event.location.address.city,
         ])
     };
 }

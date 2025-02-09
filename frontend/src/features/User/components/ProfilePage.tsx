@@ -1,21 +1,13 @@
-import { useQuery } from "@tanstack/react-query"
-import { getAddress } from "../../../lib/requests"
-import { getProfile } from "../utils/User"
-import LoadingIndicator from "../../../components/LoadingIndicator"
 import { Card, CardBody, CardHeader, CardText, CardTitle, Stack } from "react-bootstrap"
+import LoadingIndicator from "../../../components/LoadingIndicator"
+import { useAddressQuery } from "../../../hooks/useQueries"
+import { useProfileQuery } from "../hooks/useUserQueries"
+import ApplicationsList from "./ApplicationsCard"
 import ExaminationCard from "./ExaminationCard"
-import ApplicationsList from "./RegistrationsCard"
 
 function ProfilePage({ pk }: { pk: number }) {
-    const profileQuery = useQuery({
-        queryKey: ["profile", pk],
-        queryFn: (obj) => getProfile(pk, obj.signal),
-    })
-    const addressQuery = useQuery({
-        queryKey: ["address", profileQuery.data?.referee?.address],
-        queryFn: (obj) => getAddress(profileQuery.data.referee?.address, obj.signal),
-        enabled: profileQuery?.data?.referee?.address != null,
-    })
+    const profileQuery = useProfileQuery(pk);
+    const addressQuery = useAddressQuery(profileQuery?.data?.referee?.address, profileQuery.isFetched);
     if (profileQuery.isLoading) return <LoadingIndicator size="15rem" />
     return (
         <>

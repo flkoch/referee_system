@@ -1,19 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { ReactElement } from "react";
 import { Card, CardBody, CardHeader, CardText, CardTitle, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { getApplications } from "../utils/User";
 import { ApplicationType } from "../../../lib/types";
-import LoadingIndicator from "../../../components/LoadingIndicator";
-import { getCompetition } from "../../Events/utils/Competition";
 import { extractTime, formattedDateRange } from "../../../lib/helper";
+import LoadingIndicator from "../../../components/LoadingIndicator";
 import { LocationAddress } from "../../../components/Location";
 import { applicationStatusClass, applicationStatusInfo } from "../../Events/utils/Application";
-import { ReactElement } from "react";
+import { useCompetitionQuery } from "../../Events/hooks/useCompetitionQueries";
+import { useApplicationQuery } from "../hooks/useUserQueries";
 
 function ApplicationsList({ user }: { user: number }) {
-    const applicationQuery = useQuery({
-        queryKey: ['registrations', 'user', user],
-        queryFn: (obj) => getApplications(obj.signal),
-    })
+    const applicationQuery = useApplicationQuery(user)
     if (applicationQuery.isLoading) return <LoadingIndicator />
     if (applicationQuery.data == null) return <></>
     return <>
@@ -27,10 +23,7 @@ function ApplicationsList({ user }: { user: number }) {
 }
 
 function Application({ app }: { app: ApplicationType }) {
-    const competitionQuery = useQuery({
-        queryKey: ['competiiton', app.competition],
-        queryFn: (obj) => getCompetition(app.competition, obj.signal),
-    })
+    const competitionQuery = useCompetitionQuery(app.competition)
     if (competitionQuery.isLoading) return <LoadingIndicator />
     if (competitionQuery.data != null) return <>
         <Card className={applicationStatusClass(app.status)}>

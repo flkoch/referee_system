@@ -1,16 +1,12 @@
-import { useQuery } from "@tanstack/react-query"
 import { Card, CardBody, CardHeader, CardText, CardTitle } from "react-bootstrap"
-import { getExaminations } from "../utils/User"
-import { getLicenses } from "../../../lib/requests"
-import LoadingIndicator from "../../../components/LoadingIndicator"
 import { ExamType } from "../../../lib/types"
 import { license } from "../../../lib/helper"
+import LoadingIndicator from "../../../components/LoadingIndicator"
+import { useLicenseQuery } from "../../../hooks/useQueries"
+import { useExaminationQuery } from "../hooks/useUserQueries"
 
 function ExaminationCard({ user }: { user: number }) {
-    const examinationQuery = useQuery({
-        queryKey: ['examination', 'user', user],
-        queryFn: (obj) => getExaminations(obj.signal),
-    })
+    const examinationQuery = useExaminationQuery(user);
     if (examinationQuery.data != null) {
         return <Card>
             <CardHeader>
@@ -28,10 +24,7 @@ function ExaminationCard({ user }: { user: number }) {
     return <LoadingIndicator />
 }
 function Examination({ exam }: { exam: ExamType }) {
-    const licenseQuery = useQuery({
-        queryKey: ["licenses"],
-        queryFn: (obj) => getLicenses(obj.signal),
-    })
+    const licenseQuery = useLicenseQuery();
     if (licenseQuery.isLoading) return <LoadingIndicator center={false} ></LoadingIndicator>
     if (exam.passed) {
         return <CardText><>{license(exam.license, licenseQuery.data)} ({exam.date}) <i className="bi bi-check text-success" aria-label="passed"></i></></CardText>

@@ -1,18 +1,13 @@
 import { Button, Card, Col, ListGroup, ListGroupItem } from "react-bootstrap";
-import { useQuery } from "@tanstack/react-query";
 import { type CompetitionType } from "../../../lib/types"
 import { extractDay, license } from "../../../lib/helper";
-import { handleApply } from "../utils/Competition";
-import { getLicenses } from "../../../lib/requests";
-import ListGroupItemIfLargerNumber from "./ListGroupItem";
 import LoadingIndicator from "../../../components/LoadingIndicator";
+import { useLicenseQuery } from "../../../hooks/useQueries";
+import { handleApply } from "../utils/Competition";
+import ListGroupItemIfLargerNumber from "./ListGroupItem";
 
 function CompetitionDetail({ competition }: { competition: CompetitionType }) {
-    const licenseQuery = useQuery({
-        queryKey: ["licenses"],
-        queryFn: (obj) => getLicenses(obj.signal),
-        staleTime: 1000 * 60 * 10,
-    })
+    const licenseQuery = useLicenseQuery()
     return (
         <>
             <Col>
