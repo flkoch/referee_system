@@ -1,18 +1,32 @@
 name: Referee-system
 
 services:
-  app:
+  app-backend:
     build: .
     image: ref-sys-image
     container_name: ref-sys-container
     command: /app/entrypoint.sh
     ports:
       - "8000:8000"
+    restart: unless-stopped
     volumes:
       - "./backend:/app"
     depends_on:
       - postgres
       - redis
+  
+  app-frontend:
+    build: .
+    image: referee-frontend:V0.1-dev
+    container_name: referee-frontend-container
+    command: npm run dev
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    volumes:
+      - "./frontend:/app"
+    depends_on:
+      - app-backend
   
   postgres:
     image: postgres
@@ -43,7 +57,7 @@ services:
     volumes:
       - "./backend:/app"
     depends_on:
-      - app
+      - app-backend
       - postgres
       - redis
   
@@ -64,7 +78,7 @@ services:
       - "./backend:/app"
     depends_on:
       - redis
-      - app
+      - app-backend
 
 volumes:
   postgres_data:
