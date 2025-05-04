@@ -10,8 +10,8 @@ body {
 main {
     flex-grow: 1;
 }
-@import 'bootstrap/scss/bootstrap';
-@import 'bootstrap-icons/font/bootstrap-icons';
+@import '../../node_modules/bootstrap/scss/bootstrap.scss';
+@import '../../node_modules/bootstrap-icons/font/bootstrap-icons.scss';
 
 .no-show, .declined, .cancled, .not-selected, .applied, .selected, .invited, .participated {
     border-radius: 0.5rem;
@@ -76,5 +76,5 @@ main {
 @font-face {
   font-display: block;
   font-family: "bootstrap-icons";
-  src: local("bootstrap-icons"), url("bootstrap-icons/font/fonts/bootstrap-icons.woff2") format("woff2"), url("bootstrap-icons/font/fonts/bootstrap-icons.woff") format("woff");
+  src: local("bootstrap-icons"), url("/node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2") format("woff2"), url("/node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff") format("woff");
 }
