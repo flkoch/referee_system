@@ -9,24 +9,32 @@ import { Footer } from "../components/Footer";
 type ContextProp = {
     user: UserType;
     setUser: CallableFunction;
-    theme: ThemeLiteral;
     toggleTheme: CallableFunction;
 }
-export const UserContext = createContext<ContextProp>({ "user": {}, "setUser": () => { }, "theme": "light", "toggleTheme": () => { } });
+export const UserContext = createContext<ContextProp>({ "user": {}, "setUser": () => { }, "toggleTheme": () => { } });
 
 function MainLayout() {
+    const preferesDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const defaultTheme = preferesDarkMode ? "dark" : "light";
+    let selectedTheme = localStorage.getItem("theme")
+    if (!selectedTheme) {
+        localStorage.setItem("theme", defaultTheme)
+        selectedTheme = defaultTheme
+    }
+    document.documentElement.setAttribute("data-bs-theme", selectedTheme || defaultTheme)
     const id = getUser();
     const [user, setUser] = useState<UserType>({ id, "isAuthenticated": id !== undefined });
-    const [theme, setTheme] = useState<ThemeLiteral>("light");
+    const [_, setTheme] = useState<string>(selectedTheme || defaultTheme);
     function toggleTheme(_event: MouseEvent): void {
         setTheme((prev) => {
             const next: ThemeLiteral = (prev === "light") ? "dark" : "light"
             document.documentElement.setAttribute("data-bs-theme", next);
+            localStorage.setItem("theme", next)
             return next;
         });
     }
     return (
-        <UserContext.Provider value={{ user, setUser, theme, toggleTheme }} >
+        <UserContext.Provider value={{ user, setUser, toggleTheme }} >
             <header>
                 <Header />
             </header>
