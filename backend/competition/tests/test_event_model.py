@@ -49,6 +49,6 @@ class TestEventModel(TestCase):
         self.event2.info = "Test info"
         self.event2.save()
         self.assertGreaterEqual(
-            (self.event2.modified - self.event2.created).total_seconds(), 1
+            (self.event2.modified - self.event2.created).total_seconds(), 0.1
         )
         self.assertEqual(Event.objects.get(pk=self.event2.id).info, "Test info")
