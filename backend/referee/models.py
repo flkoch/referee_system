@@ -154,8 +154,10 @@ class Examination(models.Model):
         ordering = ["-date"]
 
     def __str__(self) -> str:
-        return f"{self.license}: {self.candidate.name} \
-            ({_('passed') if self.passed else _('failed')})"
+        return (
+            f"{self.license}: {self.candidate.name} "
+            f"({_('passed') if self.passed else _('failed')})"
+        )
 
     @classmethod
     def create(cls, candidate, **kwargs):

@@ -249,8 +249,10 @@ class Application(models.Model):
         verbose_name_plural = _("Applications")
 
     def __str__(self):
-        return f"Application: {self.competition.event.name} \
-            ({self.competition.start.date()}) by {self.user.name}"
+        return (
+            f"Application: {self.competition.event.name} "
+            f"({self.competition.start.date()}) by {self.user.name}"
+        )
 
 
 class Invitation(models.Model):

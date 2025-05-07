@@ -110,8 +110,8 @@ class Category(models.Model):
     def is_parent_of(self, other: any) -> bool:
         if not isinstance(other, Category):
             raise TypeError(
-                f"{other} is of type {type(other)} which cannot be compared with \
-                    {type(self)}."
+                f"{other} is of type {type(other)} which cannot be compared with "
+                f"{type(self)}."
             )
         if other.parent is None:
             return False
@@ -122,8 +122,8 @@ class Category(models.Model):
     def is_child_of(self, other: any) -> bool:
         if not isinstance(other, Category):
             raise TypeError(
-                f"{other} is of type {type(other)} which cannot be compared with \
-                    {type(self)}."
+                f"{other} is of type {type(other)} which cannot be compared with "
+                f"{type(self)}."
             )
         if self.parent is None:
             return False

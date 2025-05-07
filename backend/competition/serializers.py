@@ -46,8 +46,8 @@ class ApplicationSerializer(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=Application.objects.all(),
                 fields=["user", "competition"],
-                message="There must not be more than one application for an event per \
-                    referee.",
+                message="There must not be more than one application for an event per "
+                "referee.",
             )
         ]
 
