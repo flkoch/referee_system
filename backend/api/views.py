@@ -1,19 +1,14 @@
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.utils import timezone
-
 from rest_framework import generics
-from rest_framework import status
+from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from rest_framework.permissions import (
     AllowAny,
     DjangoModelPermissions,
-    IsAdminUser,
     IsAuthenticated,
 )
-from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 
 from api.serializers import UserCreateSerializer, UserSerializer
-
 from competition.models import (
     Accommodation,
     Application,
@@ -25,9 +20,9 @@ from competition.models import (
 from competition.serializers import (
     AccommodationSerializer,
     ApplicationSerializer,
+    CompetitionCategorySerializer,
     CompetitionOverviewSerializer,
     CompetitionSerializer,
-    CompetitionCategorySerializer,
     EventSerializer,
     InvitationSerializer,
 )

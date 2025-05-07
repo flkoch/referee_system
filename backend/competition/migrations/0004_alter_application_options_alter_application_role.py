@@ -5,20 +5,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('competition', '0003_rename_observer_competition_observers_and_more'),
-        ('referee', '0004_alter_examination_candidate_and_more'),
+        ("competition", "0003_rename_observer_competition_observers_and_more"),
+        ("referee", "0004_alter_examination_candidate_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='application',
-            options={'verbose_name': 'Application', 'verbose_name_plural': 'Applications'},
+            name="application",
+            options={
+                "verbose_name": "Application",
+                "verbose_name_plural": "Applications",
+            },
         ),
         migrations.AlterField(
-            model_name='application',
-            name='role',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='referee.refereerole'),
+            model_name="application",
+            name="role",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="+",
+                to="referee.refereerole",
+            ),
         ),
     ]

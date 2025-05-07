@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("referee", "0003_refereerole_referee_mobile_referee_phone"),
     ]

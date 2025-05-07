@@ -1,5 +1,5 @@
-from django.core import mail
 from celery import shared_task
+from django.core import mail
 
 
 @shared_task

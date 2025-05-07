@@ -6,6 +6,6 @@ class RefereeConfig(AppConfig):
     name = "referee"
 
     def ready(self):
-        import referee.signals
+        import referee.signals  # noqa: F401
 
         return super().ready()

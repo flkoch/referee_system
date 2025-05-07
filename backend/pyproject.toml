@@ -1,7 +1,7 @@
 [project]
-name = "backend"
+name = "referee-backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "Django backend for a referee registration system."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -15,4 +15,52 @@ dependencies = [
     "psycopg2-binary>=2.9.10",
     "python-environ>=0.4.54",
     "redis>=6.0.0",
+]
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+extend-select = ["E", "F", "I", "DJ"]
+ignore = []
+fixable = ["ALL"]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.2.0",
 ]

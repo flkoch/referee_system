@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueForYearValidator, UniqueTogetherValidator
 
-from helper.serializers import LocationSerializer
 from competition.models import (
     Accommodation,
     Application,
@@ -10,6 +9,7 @@ from competition.models import (
     Event,
     Invitation,
 )
+from helper.serializers import LocationSerializer
 
 
 class AccommodationSerializer(serializers.ModelSerializer):
@@ -46,7 +46,8 @@ class ApplicationSerializer(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=Application.objects.all(),
                 fields=["user", "competition"],
-                message="There must not be more than one application for an event per referee.",
+                message="There must not be more than one application for an event per \
+                    referee.",
             )
         ]
 

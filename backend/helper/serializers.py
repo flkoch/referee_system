@@ -24,10 +24,10 @@ class LocationSerializer(serializers.ModelSerializer):
         loc_id = validated_data.pop("id")
         address_data = validated_data.pop("address")
         add_id = address_data.pop("id")
-        address = (
+        address = (  # noqa: F841
             Address.objects.filter(pk=add_id).select_for_update().update(**address_data)
         )
-        location = (
+        location = (  # noqa: F841
             Location.objects.filter(pk=loc_id)
             .select_for_update()
             .update(**validated_data)

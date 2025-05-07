@@ -1,5 +1,4 @@
-from django.urls import path, include
-
+from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from api.views import (
@@ -9,14 +8,13 @@ from api.views import (
     DetailEventView,
     DetailLocationView,
     DetailUserView,
+    ListEventsView,
     ListExaminationsView,
     ListFurtureEventsView,
     ListLicenseView,
     ListLocationsView,
     UpdateAddressView,
     UpdateUserView,
-    ListEventsView,
-    CreateEventView,
 )
 
 urlpatterns = [

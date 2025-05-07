@@ -1,8 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.utils.translation import gettext as _
-
 
 from helper.models import Address, Category
 
@@ -51,16 +50,19 @@ class Referee(models.Model):
         null=True,
     )
     iban = models.CharField(max_length=34, verbose_name=_("IBAN"), blank=True)
-    phone = models.CharField(
-        max_length=25, verbose_name=_("Phone number"), blank=True, null=True
-    )
+    phone = models.CharField(max_length=25, verbose_name=_("Phone number"), default="")
     mobile = models.CharField(
-        max_length=25, verbose_name=_("Mobile phone number"), blank=True, null=True
+        max_length=25, verbose_name=_("Mobile phone number"), default=""
     )
 
     class Meta:
         verbose_name = _("Referee Profile")
         order_with_respect_to = "user"
+
+    def __str__(self) -> str:
+        if not self.user.first_name and not self.user.last_name:
+            return self.user.username
+        return self.name
 
     @property
     def passed_exams(self) -> models.QuerySet:
@@ -79,18 +81,13 @@ class Referee(models.Model):
     def licenses_below(self, child_of: RefereeLicense) -> list[RefereeLicense]:
         if not isinstance(child_of, RefereeLicense):
             raise TypeError(f"{child_of} must be of type {type(self)}.")
-        return [l for l in self.licenses if l < child_of]
+        return [license for license in self.licenses if license < child_of]
 
     def is_qualified(self, qualification: RefereeLicense) -> bool:
-        for l in self.licenses:
-            if RefereeLicense.objects.get(name=l) >= qualification:
+        for license in self.licenses:
+            if RefereeLicense.objects.get(name=license) >= qualification:
                 return True
         return False
-
-    def __str__(self) -> str:
-        if not self.user.first_name and not self.user.last_name:
-            return self.user.username
-        return self.name
 
 
 class Examination(models.Model):
@@ -151,19 +148,20 @@ class Examination(models.Model):
     note_internal = models.TextField(verbose_name=_("Note (internal)"), blank=True)
     note_external = models.TextField(verbose_name=_("Note (external)"), blank=True)
 
-    @classmethod
-    def create(cls, candidate, **kwargs):
-        if isinstance(candidate, User):
-            candidate = candidate.referee
-        return Examination.objects.create(candidate=candidate, **kwargs)
-
     class Meta:
         verbose_name = _("Examination")
         verbose_name_plural = _("Examinations")
         ordering = ["-date"]
 
     def __str__(self) -> str:
-        return f"{self.license}: {self.candidate.name} ({_('passed') if self.passed else _('failed')})"
+        return f"{self.license}: {self.candidate.name} \
+            ({_('passed') if self.passed else _('failed')})"
+
+    @classmethod
+    def create(cls, candidate, **kwargs):
+        if isinstance(candidate, User):
+            candidate = candidate.referee
+        return Examination.objects.create(candidate=candidate, **kwargs)
 
 
 class RefereeRole(models.Model):

@@ -18,15 +18,13 @@ class Address(models.Model):
 
     street = models.CharField(max_length=150, verbose_name=_("Street"))
     house_number = models.CharField(
-        max_length=10, verbose_name=_("House number"), blank=True, null=True
+        max_length=10, verbose_name=_("House number"), default=""
     )
     area_code = models.CharField(
-        max_length=15, verbose_name=_("Postal code"), blank=True, null=True
+        max_length=15, verbose_name=_("Postal code"), default=""
     )
     city = models.CharField(max_length=180, verbose_name=_("City"))
-    country = models.CharField(
-        max_length=100, verbose_name=_("Country"), blank=True, null=True
-    )
+    country = models.CharField(max_length=100, verbose_name=_("Country"), default="")
 
     class Meta:
         verbose_name = _("Address")
@@ -54,7 +52,7 @@ class Location(models.Model):
     """
 
     name = models.CharField(max_length=50, verbose_name=_("Name"))
-    description = models.TextField(verbose_name=_("Description"), blank=True, null=True)
+    description = models.TextField(verbose_name=_("Description"), default="")
     address = models.ForeignKey(
         Address, blank=True, null=True, on_delete=models.SET_NULL
     )
@@ -97,10 +95,23 @@ class Category(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def __lt__(self, other: any) -> bool:
+        return self.is_child_of(other)
+
+    def __gt__(self, other: any) -> bool:
+        return self.is_parent_of(other)
+
+    def __le__(self, other: any) -> bool:
+        return self < other or self == other
+
+    def __ge__(self, other: any) -> bool:
+        return self > other or self == other
+
     def is_parent_of(self, other: any) -> bool:
         if not isinstance(other, Category):
             raise TypeError(
-                f"{other} is of type {type(other)} which cannot be compared with {type(self)}."
+                f"{other} is of type {type(other)} which cannot be compared with \
+                    {type(self)}."
             )
         if other.parent is None:
             return False
@@ -111,7 +122,8 @@ class Category(models.Model):
     def is_child_of(self, other: any) -> bool:
         if not isinstance(other, Category):
             raise TypeError(
-                f"{other} is of type {type(other)} which cannot be compared with {type(self)}."
+                f"{other} is of type {type(other)} which cannot be compared with \
+                    {type(self)}."
             )
         if self.parent is None:
             return False
@@ -127,15 +139,3 @@ class Category(models.Model):
             value += 1
             obj = obj.parent
         return value
-
-    def __lt__(self, other: any) -> bool:
-        return self.is_child_of(other)
-
-    def __gt__(self, other: any) -> bool:
-        return self.is_parent_of(other)
-
-    def __le__(self, other: any) -> bool:
-        return self < other or self == other
-
-    def __ge__(self, other: any) -> bool:
-        return self > other or self == other

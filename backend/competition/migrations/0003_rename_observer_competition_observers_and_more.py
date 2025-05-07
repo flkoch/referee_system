@@ -5,20 +5,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('competition', '0002_alter_application_competition_and_more'),
+        ("competition", "0002_alter_application_competition_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='competition',
-            old_name='observer',
-            new_name='observers',
+            model_name="competition",
+            old_name="observer",
+            new_name="observers",
         ),
         migrations.AlterField(
-            model_name='accommodation',
-            name='event',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='accommodations', to='competition.event'),
+            model_name="accommodation",
+            name="event",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="accommodations",
+                to="competition.event",
+            ),
         ),
     ]

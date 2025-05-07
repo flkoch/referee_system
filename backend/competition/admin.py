@@ -1,11 +1,11 @@
 from django.contrib import admin
 
 from competition.models import (
-    Event,
-    Competition,
-    CompetitionCategory,
     Accommodation,
     Application,
+    Competition,
+    CompetitionCategory,
+    Event,
     Invitation,
 )
 

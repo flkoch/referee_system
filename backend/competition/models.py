@@ -1,16 +1,17 @@
-from django.db import models
 from django.contrib.auth.models import User
 from django.core import mail
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from django.template.loader import render_to_string
 
-from referee.models import Referee, RefereeLicense, RefereeRole
 from helper.models import Address, Category, Location
+from referee.models import Referee, RefereeLicense, RefereeRole
+
 from .tasks import send_mails
 
 
@@ -53,6 +54,17 @@ class Event(models.Model):
         verbose_name = _("Event")
         verbose_name_plural = _("Events")
 
+    def __str__(self) -> str:
+        """
+        Return the name as the string representation.
+        """
+        return f"{self.name}"
+
+    def get_absolute_url(self):
+        return reverse(
+            "event-detail", kwargs={"year": self.start.year, "slug": self.slug}
+        )
+
     @classmethod
     def create(cls, name: str, start: timezone.datetime, **kwargs):
         slug = slugify(name)
@@ -63,22 +75,11 @@ class Event(models.Model):
             slug += f"-{qs.count()}"
         return Event.objects.create(name=name, start=start, slug=slug, **kwargs)
 
-    def __str__(self) -> str:
-        """
-        Return the name as the string representation.
-        """
-        return f"{self.name}"
-
     @property
     def date(self) -> str:
         if self.end is None:
             return f"{self.start:%d %b %Y}"
         return f"{self.start:%d %b %Y} - {self.end:%d %b %Y}"
-
-    def get_absolute_url(self):
-        return reverse(
-            "event-detail", kwargs={"year": self.start.year, "slug": self.slug}
-        )
 
 
 class Competition(models.Model):
@@ -145,7 +146,8 @@ class Competition(models.Model):
 
     def __str__(self) -> str:
         """
-        Return the name of the associated event and the date as the string representation.
+        Return the name of the associated event and the date as the string
+        representation.
         """
         return f"{self.event.name} ({self.start.date()})"
 
@@ -162,8 +164,8 @@ class Competition(models.Model):
             return False
         if user is None:
             return True
-        for l in user.licenses():
-            license = get_object_or_404(RefereeLicense, name=l)
+        for lic in user.licenses():
+            license = get_object_or_404(RefereeLicense, name=lic)
             if self.minimum_level < license:
                 return True
         return False
@@ -247,7 +249,8 @@ class Application(models.Model):
         verbose_name_plural = _("Applications")
 
     def __str__(self):
-        return f"Application: {self.competition.event.name} ({self.competition.start.date()}) by {self.user.name}"
+        return f"Application: {self.competition.event.name} \
+            ({self.competition.start.date()}) by {self.user.name}"
 
 
 class Invitation(models.Model):
@@ -282,6 +285,9 @@ class Invitation(models.Model):
     class Meta:
         ordering = ["created", "sent"]
 
+    def __str__(self) -> str:
+        return f"Invitation {self.pk}: {self.subject}"
+
     @property
     def is_current(self):
         if self.competition is None:
@@ -306,7 +312,7 @@ class Invitation(models.Model):
                     subject=self.subject,
                     body=self.message,
                     to=a.user.user.email,
-                    reply_to=sender.email if not sender is None else "",
+                    reply_to=sender.email if sender is not None else "",
                 )
             )
         for a in self.send_copy:
@@ -315,7 +321,7 @@ class Invitation(models.Model):
                     subject=self.subject,
                     body=self.message,
                     to=a.email,
-                    reply_to=sender.email if not sender is None else "",
+                    reply_to=sender.email if sender is not None else "",
                 )
             )
         send_mails(messages)

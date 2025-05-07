@@ -6,6 +6,6 @@ class CompetitionConfig(AppConfig):
     name = "competition"
 
     def ready(self):
-        import competition.signals
+        import competition.signals  # noqa: F401
 
         return super().ready()
