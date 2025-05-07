@@ -53,7 +53,7 @@ services:
   celery:
     image: ref-sys-image
     container_name: celery-container
-    command: celery -A ref_sys worker -E -l info
+    command: uv run celery -A ref_sys worker -E -l info
     volumes:
       - "./backend:/app"
     depends_on:
@@ -64,7 +64,7 @@ services:
   flower:
     image: ref-sys-image
     container_name: flower-container
-    command: celery -A ref_sys flower --basic_auth=admin:admin
+    command: uv run celery -A ref_sys flower --basic_auth=admin:admin
     ports:
       - "5555:5555"
     depends_on:
@@ -73,7 +73,7 @@ services:
   beat:
     image: ref-sys-image
     container_name: beat-container
-    command: celery -A ref_sys beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: uv run celery -A ref_sys beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
       - "./backend:/app"
     depends_on:

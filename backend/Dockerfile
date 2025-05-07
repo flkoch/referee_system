@@ -1,4 +1,4 @@
-FROM python:3.13
+FROM ghcr.io/astral-sh/uv:python3.13-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -6,11 +6,11 @@ ENV ENV_PATH=dev.env
 
 WORKDIR /app
 
-COPY backend/requirements.txt .
+ADD uv.lock .
+ADD pyproject.toml .
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN uv sync --locked
 
-COPY backend/ .
+COPY . .
 
 EXPOSE 8000
