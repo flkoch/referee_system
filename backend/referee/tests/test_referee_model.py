@@ -1,8 +1,8 @@
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
-from django.contrib.auth.models import User
 
-from referee.models import Referee, RefereeLicense, Examination
+from referee.models import Examination, Referee, RefereeLicense
 
 # Create your tests here.
 
@@ -22,7 +22,9 @@ class RefereeTestCase(TestCase):
             last_name="Wayne",
         )
         self.user2 = User.objects.create_user(
-            username="second-user", email="2@test.com", password="user-password"
+            username="second-user",
+            email="2@test.com",
+            password="user-password",
         )
         self.license1 = RefereeLicense.objects.create(name="test")
         self.license2 = RefereeLicense.objects.create(
