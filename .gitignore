@@ -1,8 +1,9 @@
+.devcontainer
 .project
-.vscode/*
+.vscode
+.ruff_cache
 !.vscode/extensions.json
 *.code-workspace
-.devcontainer
 db.sqlite3
 **/__pycache__/*
 .venv

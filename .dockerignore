@@ -1,4 +1,10 @@
+.devcontainer/*
 .env
+.git/*
+.github/*
+.ruff_cache/*
+.venv/*
+.vscode/*
 venv/
 **/__pycache__/*
 **/node_modules/*

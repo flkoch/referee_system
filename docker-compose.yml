@@ -2,29 +2,41 @@ name: Referee-system
 
 services:
   app-backend:
-    build: .
+    build: ./backend
     image: ref-sys-image
     container_name: ref-sys-container
     command: /app/entrypoint.sh
     ports:
       - "8000:8000"
     restart: unless-stopped
-    volumes:
-      - "./backend:/app"
+    develop:
+      watch:
+        - path: ./backend
+          action: sync
+          target: /app
+          ignore:
+            - .venv/
+        - path: ./backend/pyproject.toml
+          action: rebuild
     depends_on:
       - postgres
       - redis
   
   app-frontend:
-    build: .
-    image: referee-frontend:V0.1-dev
+    build: ./frontend
+    image: referee-frontend
     container_name: referee-frontend-container
     command: npm run dev
     ports:
       - "8080:8080"
     restart: unless-stopped
-    volumes:
-      - "./frontend:/app"
+    develop:
+      watch:
+        - path: ./frontend
+          action: sync
+          target: ./app
+          ignore:
+            - node_modules/
     depends_on:
       - app-backend
   
