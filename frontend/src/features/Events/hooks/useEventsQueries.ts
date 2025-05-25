@@ -12,11 +12,12 @@ export function useEventsQuery() {
     })
 }
 
-export function useEventQuery(pk: number) {
+export function useEventQuery(pk: number, enabled: boolean = true) {
     return useQuery({
-        queryKey: ["event", pk],
+        queryKey: ["events", pk],
         queryFn: (obj) => getEvent(pk, obj.signal),
         staleTime: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 60,
+        enabled: enabled
     })
 }

@@ -7,6 +7,7 @@ import { LocationAddress } from "../../../components/Location";
 import { applicationStatusClass, applicationStatusInfo } from "../../Events/utils/Application";
 import { useCompetitionQuery } from "../../Events/hooks/useCompetitionQueries";
 import { useApplicationQuery } from "../hooks/useUserQueries";
+import { useEventQuery } from "../../Events/hooks/useEventsQueries";
 
 function ApplicationsList({ user }: { user: number }) {
     const applicationQuery = useApplicationQuery(user)
@@ -24,17 +25,18 @@ function ApplicationsList({ user }: { user: number }) {
 
 function Application({ app }: { app: ApplicationType }) {
     const competitionQuery = useCompetitionQuery(app.competition)
-    if (competitionQuery.isLoading) return <LoadingIndicator />
-    if (competitionQuery.data != null) return <>
+    const eventQuery = useEventQuery(competitionQuery?.data?.event, competitionQuery.isFetched)
+    if (competitionQuery.isLoading || eventQuery.isLoading) return <LoadingIndicator />
+    if (competitionQuery.data != null && eventQuery.data != null) return <>
         <Card className={applicationStatusClass(app.status)}>
             <CardHeader className={"d-flex justify-content-between"}>
-                <CardTitle>{competitionQuery.data.event.name} &ndash; {formattedDateRange(competitionQuery.data.start)} &ndash; {extractTime(competitionQuery.data.start)}</CardTitle>
+                <CardTitle>{eventQuery.data.name} &ndash; {formattedDateRange(competitionQuery.data.start)} &ndash; {extractTime(competitionQuery.data.start)}</CardTitle>
                 <div>
                     <OverlayTrigger placement="left" delay={{ show: 250, hide: 500 }} overlay={renderTooltip(app.status)}><i className="bi bi-info-circle" aria-label={applicationStatusInfo(app.status)}></i></OverlayTrigger>
                 </div>
             </CardHeader>
             <CardBody>
-                <CardText>{<LocationAddress location={competitionQuery.data.event.location}>&nbsp;&ndash;&nbsp;</LocationAddress>}</CardText>
+                <CardText>{<LocationAddress location={eventQuery?.data?.location}>&nbsp;&ndash;&nbsp;</LocationAddress>}</CardText>
                 <CardText>{competitionQuery.data.info}</CardText>
             </CardBody>
         </Card>

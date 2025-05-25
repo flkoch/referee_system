@@ -2,7 +2,7 @@ import { getRequest } from "./api";
 
 
 export async function getAddress(pk: number, signal: AbortSignal) {
-    return getRequest(`/api/address/${pk}/`, signal);
+    return getRequest(`/api/addresses/${pk}/`, signal);
 }
 
 export async function getLicenses(signal: AbortSignal) {

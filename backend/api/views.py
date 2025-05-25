@@ -1,14 +1,15 @@
 from django.contrib.auth.models import User
 from django.utils import timezone
-from rest_framework import generics
+from rest_framework import generics, viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from rest_framework.permissions import (
-    AllowAny,
     DjangoModelPermissions,
     IsAuthenticated,
 )
+from rest_framework.response import Response
 
-from api.serializers import UserCreateSerializer, UserSerializer
+from api.serializers import UserSerializer
 from competition.models import (
     Accommodation,
     Application,
@@ -21,7 +22,6 @@ from competition.serializers import (
     AccommodationSerializer,
     ApplicationSerializer,
     CompetitionCategorySerializer,
-    CompetitionOverviewSerializer,
     CompetitionSerializer,
     EventSerializer,
     InvitationSerializer,
@@ -32,63 +32,80 @@ from referee.models import Examination, RefereeLicense
 from referee.serializers import ExaminationSerializer, RefereeLicenseSerializer
 
 
-class CreateUserView(generics.CreateAPIView):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserCreateSerializer
-    permission_classes = [AllowAny]
-
-
-class DetailUserView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        return User.objects.filter(id=user.id)
+        if self.request.user.is_anonymous:
+            raise PermissionDenied("You need to login to access this endpoint.")
+        qs = super().get_queryset()
+        match self.action:
+            case "list" | "retrieve":
+                if self.request.user.has_perm("auth.models.view_user"):
+                    return qs
+            case "update" | "partial_update":
+                if self.request.user.has_perm("auth.models.change_user"):
+                    return qs
+            case "delete":
+                if self.request.user.has_perm("auth.models.delete_user"):
+                    return qs
+                raise PermissionDenied("You don't have permission to delete users.")
+        return qs.filter(pk=self.request.user.id)
 
 
-class UpdateUserView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
 
     def get_queryset(self):
-        return User.objects.all()
+        if self.request.user.is_anonymous:
+            raise PermissionDenied("You need to login to access this endpoint.")
+        qs = super().get_queryset()
+        match self.action:
+            case "list" | "retrieve":
+                return qs
+            case "destroy":
+                if self.request.user.has_perm("referee.models.delete_event"):
+                    return qs
+                raise PermissionDenied()
+        raise PermissionDenied()
+
+    @action(methods=["GET"], detail=False, url_path="future")
+    def list_future(self, request):
+        if self.request.user.is_anonymous:
+            raise PermissionDenied("You need to login to access this endpoint.")
+        future_events = super().get_queryset().filter(start__gte=timezone.now())
+        page = self.paginate_queryset(future_events)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(future_events, many=True)
+        return Response(serializer.data)
 
 
-class CreateEventView(generics.CreateAPIView):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-    permission_classes = [DjangoModelPermissions]
-
-
-class ListEventsView(generics.ListAPIView):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class ListFurtureEventsView(generics.ListAPIView):
-    queryset = Event.objects.filter(start__gte=timezone.now())
-    serializer_class = EventSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class DetailEventView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-    permission_classes = [DjangoModelPermissions]
-
-
-class CreateCompetitionView(generics.CreateAPIView):
+class CompetitionViewSet(viewsets.ModelViewSet):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
-    permission_classes = [DjangoModelPermissions]
 
-
-class DetailCompetitionView(generics.RetrieveAPIView):
-    queryset = Competition.objects.all()
-    serializer_class = CompetitionOverviewSerializer
-    permission_classes = [DjangoModelPermissions]
+    def get_queryset(self):
+        if self.request.user.is_anonymous:
+            raise PermissionDenied("You need to login to access this endpoint.")
+        qs = super().get_queryset()
+        match self.action:
+            case "list" | "retrieve":
+                return qs
+            case "update" | "partial_update":
+                if self.request.user.has_perm("referee_competition_change"):
+                    return qs
+            case "create":
+                if self.request.user.has_perm("referee_competition_create"):
+                    return qs
+            case "destroy":
+                if self.request.user.has_perm("referee_competition_delete"):
+                    return qs
+        raise PermissionDenied()
 
 
 class CreateCompetitionCategoryView(generics.CreateAPIView):

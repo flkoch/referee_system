@@ -26,5 +26,5 @@ export function handleApply(id: number) {
 }
 
 export async function getCompetition(id: number, signal: AbortSignal) {
-    return getRequest(`/api/competition/${id}`, signal)
+    return getRequest(`/api/competitions/${id}`, signal)
 }
