@@ -13,7 +13,7 @@ dependencies = [
     "djangorestframework-simplejwt>=5.5.0",
     "flower>=2.0.1",
     "psycopg2-binary>=2.9.10",
-    "python-environ>=0.4.54",
+    "django-environ>=0.14",
     "redis>=6.0.0",
 ]
 [tool.ruff]
