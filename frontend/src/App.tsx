@@ -57,6 +57,9 @@ function App() {
             <Login />
           </Suspense>
         } />
+        <Route path="register" element={
+          <RegisterandLogout />
+        } />
         <Route path="*" element={
           <Suspense fallback={<LoadingIndicator size="15rem" />}>
             <NotFound />
@@ -65,9 +68,6 @@ function App() {
       </Route>
       <Route path="logout" element={
         <Logout />
-      } />
-      <Route path="register" element={
-        <RegisterandLogout />
       } />
     </>
   ))

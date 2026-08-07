@@ -1,12 +1,14 @@
 import { useState, FormEvent, useContext, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import { toast } from "react-toastify";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../../lib/constants";
 import { UserType } from "../../../lib/types";
 import { getUser } from "../../../lib/auth";
 import api from "../../../lib/api";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import { UserContext } from "../../../layouts/MainLayout";
+import { AxiosError } from "axios";
 
 type UserFormProps = {
     route: string;
@@ -44,6 +46,22 @@ function UserForm({ route, method, next = null }: UserFormProps) {
             }
         } catch (error) {
             setUser({ "id": undefined, "isAuthenticated": false });
+            if (error instanceof AxiosError) {
+                if (error.status === 400) {
+                    for (const [key, value] of Object.entries(error.response?.data)) {
+                        toast.error(String(value) + "\n" + String(key));
+                    }
+                } else if (error.status === 401) {
+                    for (const [_key, value] of Object.entries(error.response?.data)) {
+                        toast.error(String(value));
+                    }
+                } else if (error.status === 404) {
+                    toast.error("There was a problem with your request. Please contact an administrator.")
+                }
+            } else {
+                toast.error("An unknown error occured.");
+                console.error(error);
+            }
         } finally {
             setIsLoading(false);
         }
