@@ -163,40 +163,74 @@ class CreateInvitationView(generics.CreateAPIView):
     permission_classes = [DjangoModelPermissions]
 
 
-class UpdateAddressView(generics.RetrieveUpdateAPIView):
+class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.is_anonymous:
+            raise PermissionDenied("You need to login to access this endpoint.")
+        qs = super().get_queryset()
+        match self.action:
+            case "update" | "partial_update":
+                if self.request.user.has_perm("helper_address_update"):
+                    return qs
+                return qs.filter(id=self.request.user.referee.address)
+            case "create":
+                if (
+                    self.request.user.has_perm("helper_address_create")
+                    or self.request.user.referee.address is None
+                ):
+                    return qs
+            case "list" | "retrieve":
+                return qs
+            case "destroy":
+                if self.request.user.has_perm("helper_address_delete"):
+                    return qs
+        raise PermissionDenied()
 
 
-class CreateAddressView(generics.CreateAPIView):
-    queryset = Address.objects.all()
-    serializer_class = AddressSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class CreateLocationView(generics.CreateAPIView):
+class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
-    permission_classes = [DjangoModelPermissions]
+
+    def get_queryset(self):
+        if self.request.user.is_anonymous:
+            raise PermissionDenied("You need to login to access this endpoint.")
+        qs = super().get_queryset()
+        match self.action:
+            case "retrieve" | "list":
+                return qs
+            case "create":
+                if self.request.user.has_perm("helper_location_create"):
+                    return qs
+            case "update" | "partial_update":
+                if self.request.user.has_perm("helper_location_update"):
+                    return qs
+            case "destroy":
+                if self.request.user.has_perm("helper_location_delete"):
+                    return qs
+        raise PermissionDenied()
 
 
-class ListLocationsView(generics.ListAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class DetailLocationView(generics.RetrieveUpdateAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class ListLicenseView(generics.ListAPIView):
+class LicenseViewSet(viewsets.ModelViewSet):
     queryset = RefereeLicense.objects.all()
     serializer_class = RefereeLicenseSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.is_anonymous:
+            raise PermissionDenied("You need to login to access this endpoint.")
+        qs = super().get_queryset()
+        match self.action:
+            case "list" | "retrieve":
+                return qs
+            case "update" | "partial_update":
+                if self.request.user.has_perm("referee_refereelicense_update"):
+                    return qs
+            case "destroy":
+                if self.request.user.has_perm("referee_refereelicense_delete"):
+                    return qs
+        raise PermissionDenied()
 
 
 class ListExaminationsView(generics.ListAPIView):
