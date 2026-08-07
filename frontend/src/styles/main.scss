@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $blue: rgba(0, 114, 188, 1);
 body {
     padding-top: 5rem;
@@ -21,7 +23,8 @@ main {
 .no-show {
     border-color: $danger;
     .card-body {
-        background-color: lighten($danger, 40%);
+        background-color: color.adjust($danger, $lightness: 40%);
+        color: $gray-800;
     }
 }
 .no-show, .declined {
@@ -63,13 +66,14 @@ main {
 }
 .invited {
     .card-body {
-        background-color: lighten($green, 50%);
+        background-color: color.adjust($green, $lightness: 50%);
+        color: $gray-800;
     }
 }
 .participated {
     .card-body {
         background-color: $green;
-        color: $white;
+        color: $gray-200;
     }
 }
 
